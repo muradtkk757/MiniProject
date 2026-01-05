@@ -1,0 +1,524 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace ConsoleUI
+{
+
+    public static class Localization
+    {
+        private static string lang = "az";
+
+        private static readonly Dictionary<string, Dictionary<string, string>> messages =
+            new Dictionary<string, Dictionary<string, string>>(StringComparer.OrdinalIgnoreCase)
+            {
+
+                ["az"] = new Dictionary<string, string>
+                {
+                    ["LibraryTitle"] = "📚 Kitabxana İdarəetmə Sistemi - Console UI",
+                    ["MainMenuPrefix"] = "Əsas Menyu:",
+                    ["ManageBooks"] = "Kitabları idarə et",
+                    ["ManageCategories"] = "Kateqoriyaları idarə et",
+                    ["ManageMembers"] = "Üzvləri idarə et",
+                    ["Exit"] = "Çıxış",
+                    ["Choose"] = "Seçin",
+                    ["InvalidChoice"] = "Yanlış seçim.",
+                    ["Error"] = "Xəta",
+                    ["Goodbye"] = "Hələlik!",
+                    ["LanguagePrompt"] = "Dil seçin:",
+                    ["LanguageSaved"] = "Dil yadda saxlandı ✅",
+                    ["Create"] = "Yarat",
+                    ["List"] = "Siyahı",
+                    ["GetById"] = "GetById",
+                    ["Update"] = "Yenilə",
+                    ["Delete"] = "Sil",
+                    ["Search"] = "Axtar",
+                    ["Back"] = "Geri",
+                    ["Choice"] = "Seçim:",
+                    ["Title"] = "Başlıq",
+                    ["Author"] = "Müəllif",
+                    ["ISBN"] = "ISBN (13 simvol)",
+                    ["PublishedYear"] = "Nəşr ili",
+                    ["CategoryId"] = "KateqoriyaId",
+                    ["IsAvailable"] = "Mövcuddurmu",
+                    ["BookCreated"] = "Kitab yaradıldı.",
+                    ["NoBooks"] = "Kitab yoxdur.",
+                    ["InvalidId"] = "Yanlış id.",
+                    ["NotFound"] = "Tapılmadı.",
+                    ["Updated"] = "Yeniləndi.",
+                    ["Deleted"] = "Silindi.",
+                    ["Keyword"] = "Açar söz",
+                    ["TitleAuthorCatId"] = "başlıq, müəllif və ya kateqoriya id",
+                    ["Loading"] = "Yüklənir...",
+                    ["Name"] = "Ad",
+                    ["Description"] = "Təsvir",
+                    ["CategoryCreated"] = "Kateqoriya yaradıldı.",
+                    ["NoCategories"] = "Kateqoriya yoxdur.",
+                    ["FullName"] = "Tam adı",
+                    ["Email"] = "E-poçt",
+                    ["PhoneNumber"] = "Telefon nömrəsi",
+                    ["MemberCreated"] = "Üzv yaradıldı.",
+                    ["NoMembers"] = "Üzv yoxdur.",
+                    ["NoResults"] = "Nəticə tapılmadı.",
+                    ["NameOrEmail"] = "ad və ya e-poçt",
+                    ["TitleAuthor"] = "Başlıq/Müəllif",
+                    ["Starting"] = "Proqram başlanır",
+                    ["PressEnterToContinue"] = "Davam etmək üçün Enter basın...",
+                    ["Optional"] = "(istəyə bağlı)",
+                    ["NameRequired"] = "Ad daxil edin.",
+                    ["CategoryExists"] = "Bu kateqoriya artıq mövcuddur."
+                },
+
+
+                ["en"] = new Dictionary<string, string>
+                {
+                    ["LibraryTitle"] = "📚 Library Management System - Console UI",
+                    ["MainMenuPrefix"] = "Main Menu:",
+                    ["ManageBooks"] = "Manage Books",
+                    ["ManageCategories"] = "Manage Categories",
+                    ["ManageMembers"] = "Manage Members",
+                    ["Exit"] = "Exit",
+                    ["Choose"] = "Choose",
+                    ["InvalidChoice"] = "Invalid choice.",
+                    ["Error"] = "Error",
+                    ["Goodbye"] = "Goodbye!",
+                    ["LanguagePrompt"] = "Select language:",
+                    ["LanguageSaved"] = "Language saved ✅",
+                    ["Create"] = "Create",
+                    ["List"] = "List",
+                    ["GetById"] = "GetById",
+                    ["Update"] = "Update",
+                    ["Delete"] = "Delete",
+                    ["Search"] = "Search",
+                    ["Back"] = "Back",
+                    ["Choice"] = "Choice:",
+                    ["Title"] = "Title",
+                    ["Author"] = "Author",
+                    ["ISBN"] = "ISBN (13 chars)",
+                    ["PublishedYear"] = "Published Year",
+                    ["CategoryId"] = "CategoryId",
+                    ["IsAvailable"] = "IsAvailable",
+                    ["BookCreated"] = "Book created.",
+                    ["NoBooks"] = "No books.",
+                    ["InvalidId"] = "Invalid id.",
+                    ["NotFound"] = "Not found.",
+                    ["Updated"] = "Updated.",
+                    ["Deleted"] = "Deleted.",
+                    ["Keyword"] = "Keyword",
+                    ["TitleAuthorCatId"] = "title, author or category id",
+                    ["Loading"] = "Loading...",
+                    ["Name"] = "Name",
+                    ["Description"] = "Description",
+                    ["CategoryCreated"] = "Category created.",
+                    ["NoCategories"] = "No categories.",
+                    ["FullName"] = "Full Name",
+                    ["Email"] = "Email",
+                    ["PhoneNumber"] = "Phone Number",
+                    ["MemberCreated"] = "Member created.",
+                    ["NoMembers"] = "No members.",
+                    ["NoResults"] = "No results.",
+                    ["NameOrEmail"] = "name or email",
+                    ["TitleAuthor"] = "Title/Author",
+                    ["Starting"] = "Starting app",
+                    ["PressEnterToContinue"] = "Press Enter to continue...",
+                    ["Optional"] = "(optional)",
+                    ["NameRequired"] = "Name is required.",
+                    ["CategoryExists"] = "A category with this name already exists."
+                },
+
+
+                ["ru"] = new Dictionary<string, string>
+                {
+                    ["LibraryTitle"] = "📚 Система управления библиотекой - Console UI",
+                    ["MainMenuPrefix"] = "Главное меню:",
+                    ["ManageBooks"] = "Управлять книгами",
+                    ["ManageCategories"] = "Управлять категориями",
+                    ["ManageMembers"] = "Управлять участниками",
+                    ["Exit"] = "Выход",
+                    ["Choose"] = "Выберите",
+                    ["InvalidChoice"] = "Неверный выбор.",
+                    ["Error"] = "Ошибка",
+                    ["Goodbye"] = "До свидания!",
+                    ["LanguagePrompt"] = "Выберите язык:",
+                    ["LanguageSaved"] = "Язык сохранен ✅",
+                    ["Create"] = "Создать",
+                    ["List"] = "Список",
+                    ["GetById"] = "Получить по Id",
+                    ["Update"] = "Обновить",
+                    ["Delete"] = "Удалить",
+                    ["Search"] = "Поиск",
+                    ["Back"] = "Назад",
+                    ["Choice"] = "Выбор:",
+                    ["Title"] = "Название",
+                    ["Author"] = "Автор",
+                    ["ISBN"] = "ISBN (13 символов)",
+                    ["PublishedYear"] = "Год издания",
+                    ["CategoryId"] = "CategoryId",
+                    ["IsAvailable"] = "Доступна ли",
+                    ["BookCreated"] = "Книга создана.",
+                    ["NoBooks"] = "Книг нет.",
+                    ["InvalidId"] = "Неверный id.",
+                    ["NotFound"] = "Не найдено.",
+                    ["Updated"] = "Обновлено.",
+                    ["Deleted"] = "Удалено.",
+                    ["Keyword"] = "Ключевое слово",
+                    ["TitleAuthorCatId"] = "название, автор или id категории",
+                    ["Loading"] = "Загрузка...",
+                    ["Name"] = "Имя",
+                    ["Description"] = "Описание",
+                    ["CategoryCreated"] = "Категория создана.",
+                    ["NoCategories"] = "Категорий нет.",
+                    ["FullName"] = "Полное имя",
+                    ["Email"] = "Эл.почта",
+                    ["PhoneNumber"] = "Телефон",
+                    ["MemberCreated"] = "Участник создан.",
+                    ["NoMembers"] = "Участников нет.",
+                    ["NoResults"] = "Результатов нет.",
+                    ["NameOrEmail"] = "имя или эл.почта",
+                    ["TitleAuthor"] = "Название/Автор",
+                    ["Starting"] = "Запуск программы",
+                    ["PressEnterToContinue"] = "Нажмите Enter, чтобы продолжить...",
+                    ["Optional"] = "(необязательно)",
+                    ["NameRequired"] = "Требуется имя.",
+                    ["CategoryExists"] = "Категория с таким именем уже существует."
+                },
+
+
+                ["zh"] = new Dictionary<string, string>
+                {
+                    ["LibraryTitle"] = "📚 图书馆管理系统 - 控制台 UI",
+                    ["MainMenuPrefix"] = "主菜单:",
+                    ["ManageBooks"] = "管理图书",
+                    ["ManageCategories"] = "管理类别",
+                    ["ManageMembers"] = "管理成员",
+                    ["Exit"] = "退出",
+                    ["Choose"] = "选择",
+                    ["InvalidChoice"] = "选择无效。",
+                    ["Error"] = "错误",
+                    ["Goodbye"] = "再见！",
+                    ["LanguagePrompt"] = "选择语言：",
+                    ["LanguageSaved"] = "语言已保存 ✅",
+                    ["Create"] = "创建",
+                    ["List"] = "列表",
+                    ["GetById"] = "按ID获取",
+                    ["Update"] = "更新",
+                    ["Delete"] = "删除",
+                    ["Search"] = "搜索",
+                    ["Back"] = "返回",
+                    ["Choice"] = "选择：",
+                    ["Title"] = "标题",
+                    ["Author"] = "作者",
+                    ["ISBN"] = "ISBN（13位）",
+                    ["PublishedYear"] = "出版年份",
+                    ["CategoryId"] = "类别Id",
+                    ["IsAvailable"] = "可用",
+                    ["BookCreated"] = "图书已创建。",
+                    ["NoBooks"] = "没有图书。",
+                    ["InvalidId"] = "无效的ID。",
+                    ["NotFound"] = "未找到。",
+                    ["Updated"] = "已更新。",
+                    ["Deleted"] = "已删除。",
+                    ["Keyword"] = "关键词",
+                    ["TitleAuthorCatId"] = "标题、作者或类别ID",
+                    ["Loading"] = "加载中...",
+                    ["Name"] = "名称",
+                    ["Description"] = "描述",
+                    ["CategoryCreated"] = "类别已创建。",
+                    ["NoCategories"] = "没有类别。",
+                    ["FullName"] = "全名",
+                    ["Email"] = "电子邮件",
+                    ["PhoneNumber"] = "电话号码",
+                    ["MemberCreated"] = "成员已创建。",
+                    ["NoMembers"] = "没有成员。",
+                    ["NoResults"] = "未找到结果。",
+                    ["NameOrEmail"] = "姓名或电子邮件",
+                    ["TitleAuthor"] = "标题/作者",
+                    ["Starting"] = "启动程序",
+                    ["PressEnterToContinue"] = "按回车继续...",
+                    ["Optional"] = "（可选）",
+                    ["NameRequired"] = "名称为必填项。",
+                    ["CategoryExists"] = "具有此名称的类别已存在。"
+                },
+
+
+                ["fr"] = new Dictionary<string, string>
+                {
+                    ["LibraryTitle"] = "📚 Système de gestion de bibliothèque - Console UI",
+                    ["MainMenuPrefix"] = "Menu principal :",
+                    ["ManageBooks"] = "Gérer les livres",
+                    ["ManageCategories"] = "Gérer les catégories",
+                    ["ManageMembers"] = "Gérer les membres",
+                    ["Exit"] = "Quitter",
+                    ["Choose"] = "Choisir",
+                    ["InvalidChoice"] = "Choix invalide.",
+                    ["Error"] = "Erreur",
+                    ["Goodbye"] = "Au revoir !",
+                    ["LanguagePrompt"] = "Sélectionnez la langue :",
+                    ["LanguageSaved"] = "Langue enregistrée ✅",
+                    ["Create"] = "Créer",
+                    ["List"] = "Liste",
+                    ["GetById"] = "Obtenir par Id",
+                    ["Update"] = "Mettre à jour",
+                    ["Delete"] = "Supprimer",
+                    ["Search"] = "Rechercher",
+                    ["Back"] = "Retour",
+                    ["Choice"] = "Choix :",
+                    ["Title"] = "Titre",
+                    ["Author"] = "Auteur",
+                    ["ISBN"] = "ISBN (13 caractères)",
+                    ["PublishedYear"] = "Année de publication",
+                    ["CategoryId"] = "CategoryId",
+                    ["IsAvailable"] = "Disponible",
+                    ["BookCreated"] = "Livre créé.",
+                    ["NoBooks"] = "Aucun livre.",
+                    ["InvalidId"] = "Id invalide.",
+                    ["NotFound"] = "Introuvable.",
+                    ["Updated"] = "Mis à jour.",
+                    ["Deleted"] = "Supprimé.",
+                    ["Keyword"] = "Mot-clé",
+                    ["TitleAuthorCatId"] = "titre, auteur ou id de catégorie",
+                    ["Loading"] = "Chargement...",
+                    ["Name"] = "Nom",
+                    ["Description"] = "Description",
+                    ["CategoryCreated"] = "Catégorie créée.",
+                    ["NoCategories"] = "Aucune catégorie.",
+                    ["FullName"] = "Nom complet",
+                    ["Email"] = "E-mail",
+                    ["PhoneNumber"] = "Numéro de téléphone",
+                    ["MemberCreated"] = "Membre créé.",
+                    ["NoMembers"] = "Aucun membre.",
+                    ["NoResults"] = "Aucun résultat.",
+                    ["NameOrEmail"] = "nom ou e-mail",
+                    ["TitleAuthor"] = "Titre/Auteur",
+                    ["Starting"] = "Démarrage de l'application",
+                    ["PressEnterToContinue"] = "Appuyez sur Entrée pour continuer...",
+                    ["Optional"] = "(facultatif)",
+                    ["NameRequired"] = "Le nom est requis.",
+                    ["CategoryExists"] = "Une catégorie avec ce nom existe déjà."
+                },
+
+
+                ["de"] = new Dictionary<string, string>
+                {
+                    ["LibraryTitle"] = "📚 Bibliotheksverwaltung - Console UI",
+                    ["MainMenuPrefix"] = "Hauptmenü:",
+                    ["ManageBooks"] = "Bücher verwalten",
+                    ["ManageCategories"] = "Kategorien verwalten",
+                    ["ManageMembers"] = "Mitglieder verwalten",
+                    ["Exit"] = "Beenden",
+                    ["Choose"] = "Wählen",
+                    ["InvalidChoice"] = "Ungültige Auswahl.",
+                    ["Error"] = "Fehler",
+                    ["Goodbye"] = "Auf Wiedersehen!",
+                    ["LanguagePrompt"] = "Sprache wählen:",
+                    ["LanguageSaved"] = "Sprache gespeichert ✅",
+                    ["Create"] = "Erstellen",
+                    ["List"] = "Liste",
+                    ["GetById"] = "Per Id holen",
+                    ["Update"] = "Aktualisieren",
+                    ["Delete"] = "Löschen",
+                    ["Search"] = "Suchen",
+                    ["Back"] = "Zurück",
+                    ["Choice"] = "Auswahl:",
+                    ["Title"] = "Titel",
+                    ["Author"] = "Autor",
+                    ["ISBN"] = "ISBN (13 Zeichen)",
+                    ["PublishedYear"] = "Erscheinungsjahr",
+                    ["CategoryId"] = "CategoryId",
+                    ["IsAvailable"] = "Verfügbar",
+                    ["BookCreated"] = "Buch erstellt.",
+                    ["NoBooks"] = "Keine Bücher.",
+                    ["InvalidId"] = "Ungültige Id.",
+                    ["NotFound"] = "Nicht gefunden.",
+                    ["Updated"] = "Aktualisiert.",
+                    ["Deleted"] = "Gelöscht.",
+                    ["Keyword"] = "Schlüsselwort",
+                    ["TitleAuthorCatId"] = "Titel, Autor oder Kategorie-id",
+                    ["Loading"] = "Lädt...",
+                    ["Name"] = "Name",
+                    ["Description"] = "Beschreibung",
+                    ["CategoryCreated"] = "Kategorie erstellt.",
+                    ["NoCategories"] = "Keine Kategorien.",
+                    ["FullName"] = "Vollständiger Name",
+                    ["Email"] = "E-Mail",
+                    ["PhoneNumber"] = "Telefonnummer",
+                    ["MemberCreated"] = "Mitglied erstellt.",
+                    ["NoMembers"] = "Keine Mitglieder.",
+                    ["NoResults"] = "Keine Ergebnisse.",
+                    ["NameOrEmail"] = "Name oder E-Mail",
+                    ["TitleAuthor"] = "Titel/Autor",
+                    ["Starting"] = "Programm startet",
+                    ["PressEnterToContinue"] = "Drücken Sie die Eingabetaste, um fortzufahren...",
+                    ["Optional"] = "(optional)",
+                    ["NameRequired"] = "Name ist erforderlich.",
+                    ["CategoryExists"] = "Eine Kategorie mit diesem Namen existiert bereits."
+                },
+
+
+                ["it"] = new Dictionary<string, string>
+                {
+                    ["LibraryTitle"] = "📚 Sistema di gestione della biblioteca - Console UI",
+                    ["MainMenuPrefix"] = "Menu principale:",
+                    ["ManageBooks"] = "Gestisci libri",
+                    ["ManageCategories"] = "Gestisci categorie",
+                    ["ManageMembers"] = "Gestisci membri",
+                    ["Exit"] = "Esci",
+                    ["Choose"] = "Scegli",
+                    ["InvalidChoice"] = "Scelta non valida.",
+                    ["Error"] = "Errore",
+                    ["Goodbye"] = "Arrivederci!",
+                    ["LanguagePrompt"] = "Seleziona la lingua:",
+                    ["LanguageSaved"] = "Lingua salvata ✅",
+                    ["Create"] = "Crea",
+                    ["List"] = "Elenco",
+                    ["GetById"] = "Ottieni per Id",
+                    ["Update"] = "Aggiorna",
+                    ["Delete"] = "Elimina",
+                    ["Search"] = "Cerca",
+                    ["Back"] = "Indietro",
+                    ["Choice"] = "Scelta:",
+                    ["Title"] = "Titolo",
+                    ["Author"] = "Autore",
+                    ["ISBN"] = "ISBN (13 caratteri)",
+                    ["PublishedYear"] = "Anno di pubblicazione",
+                    ["CategoryId"] = "CategoryId",
+                    ["IsAvailable"] = "Disponibile",
+                    ["BookCreated"] = "Libro creato.",
+                    ["NoBooks"] = "Nessun libro.",
+                    ["InvalidId"] = "Id non valido.",
+                    ["NotFound"] = "Non trovato.",
+                    ["Updated"] = "Aggiornato.",
+                    ["Deleted"] = "Eliminato.",
+                    ["Keyword"] = "Parola chiave",
+                    ["TitleAuthorCatId"] = "titolo, autore o id categoria",
+                    ["Loading"] = "Caricamento...",
+                    ["Name"] = "Nome",
+                    ["Description"] = "Descrizione",
+                    ["CategoryCreated"] = "Categoria creata.",
+                    ["NoCategories"] = "Nessuna categoria.",
+                    ["FullName"] = "Nome completo",
+                    ["Email"] = "Email",
+                    ["PhoneNumber"] = "Numero di telefono",
+                    ["MemberCreated"] = "Membro creato.",
+                    ["NoMembers"] = "Nessun membro.",
+                    ["NoResults"] = "Nessun risultato.",
+                    ["NameOrEmail"] = "nome o email",
+                    ["TitleAuthor"] = "Titolo/Autore",
+                    ["Starting"] = "Avvio dell'app",
+                    ["PressEnterToContinue"] = "Premi Invio per continuare...",
+                    ["Optional"] = "(facoltativo)",
+                    ["NameRequired"] = "Il nome è obbligatorio.",
+                    ["CategoryExists"] = "Esiste già una categoria con questo nome."
+                },
+
+
+                ["es"] = new Dictionary<string, string>
+                {
+                    ["LibraryTitle"] = "📚 Sistema de gestión de biblioteca - Console UI",
+                    ["MainMenuPrefix"] = "Menú principal:",
+                    ["ManageBooks"] = "Administrar libros",
+                    ["ManageCategories"] = "Administrar categorías",
+                    ["ManageMembers"] = "Administrar miembros",
+                    ["Exit"] = "Salir",
+                    ["Choose"] = "Elegir",
+                    ["InvalidChoice"] = "Elección inválida.",
+                    ["Error"] = "Error",
+                    ["Goodbye"] = "¡Adiós!",
+                    ["LanguagePrompt"] = "Seleccione idioma:",
+                    ["LanguageSaved"] = "Idioma guardado ✅",
+                    ["Create"] = "Crear",
+                    ["List"] = "Lista",
+                    ["GetById"] = "Obtener por Id",
+                    ["Update"] = "Actualizar",
+                    ["Delete"] = "Eliminar",
+                    ["Search"] = "Buscar",
+                    ["Back"] = "Atrás",
+                    ["Choice"] = "Elección:",
+                    ["Title"] = "Título",
+                    ["Author"] = "Autor",
+                    ["ISBN"] = "ISBN (13 caracteres)",
+                    ["PublishedYear"] = "Año de publicación",
+                    ["CategoryId"] = "CategoryId",
+                    ["IsAvailable"] = "Disponible",
+                    ["BookCreated"] = "Libro creado.",
+                    ["NoBooks"] = "No hay libros.",
+                    ["InvalidId"] = "Id inválido.",
+                    ["NotFound"] = "No encontrado.",
+                    ["Updated"] = "Actualizado.",
+                    ["Deleted"] = "Eliminado.",
+                    ["Keyword"] = "Palabra clave",
+                    ["TitleAuthorCatId"] = "título, autor o id de categoría",
+                    ["Loading"] = "Cargando...",
+                    ["Name"] = "Nombre",
+                    ["Description"] = "Descripción",
+                    ["CategoryCreated"] = "Categoría creada.",
+                    ["NoCategories"] = "No hay categorías.",
+                    ["FullName"] = "Nombre completo",
+                    ["Email"] = "Correo",
+                    ["PhoneNumber"] = "Teléfono",
+                    ["MemberCreated"] = "Miembro creado.",
+                    ["NoMembers"] = "No hay miembros.",
+                    ["NoResults"] = "No hay resultados.",
+                    ["NameOrEmail"] = "nombre o correo",
+                    ["TitleAuthor"] = "Título/Autor",
+                    ["Starting"] = "Iniciando la aplicación",
+                    ["PressEnterToContinue"] = "Presione Enter para continuar...",
+                    ["Optional"] = "(opcional)",
+                    ["NameRequired"] = "Se requiere el nombre.",
+                    ["CategoryExists"] = "Ya existe una categoría con este nombre."
+                }
+            };
+
+
+        public static void SetLanguage(string language)
+        {
+            if (string.IsNullOrWhiteSpace(language)) language = "az";
+            var l = language.ToLower();
+            if (l != "az" && l != "en" && l != "ru" && l != "zh" && l != "fr" && l != "de" && l != "it" && l != "es") l = "az";
+            lang = l;
+        }
+
+
+        public static string T(string key)
+        {
+            if (key == null) return string.Empty;
+            if (messages.TryGetValue(lang, out var dict) && dict.TryGetValue(key, out var val))
+                return val;
+
+            if (messages["az"].TryGetValue(key, out var fallback)) return fallback;
+            return key;
+        }
+
+
+        public static void SelectLanguageInteractive()
+        {
+            Console.WriteLine();
+            Console.WriteLine("🌐 " + T("LanguagePrompt"));
+            Console.WriteLine("1. 🇦🇿 Azərbaycan (az)");
+            Console.WriteLine("2. 🇬🇧 English (en)");
+            Console.WriteLine("3. 🇷🇺 Русский (ru)");
+            Console.WriteLine("4. 🇨🇳 中文 (zh)");
+            Console.WriteLine("5. 🇫🇷 Français (fr)");
+            Console.WriteLine("6. 🇩🇪 Deutsch (de)");
+            Console.WriteLine("7. 🇮🇹 Italiano (it)");
+            Console.WriteLine("8. 🇪🇸 Español (es)");
+            Console.Write(T("Choose") + " ");
+            var c = Console.ReadLine()?.Trim();
+
+            switch (c)
+            {
+                case "2": LocalSettings.Instance.Language = "en"; break;
+                case "3": LocalSettings.Instance.Language = "ru"; break;
+                case "4": LocalSettings.Instance.Language = "zh"; break;
+                case "5": LocalSettings.Instance.Language = "fr"; break;
+                case "6": LocalSettings.Instance.Language = "de"; break;
+                case "7": LocalSettings.Instance.Language = "it"; break;
+                case "8": LocalSettings.Instance.Language = "es"; break;
+                default: LocalSettings.Instance.Language = "az"; break;
+            }
+
+
+            SetLanguage(LocalSettings.Instance.Language);
+            LocalSettings.Instance.Save();
+        }
+    }
+}
