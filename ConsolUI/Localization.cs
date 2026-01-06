@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace ConsoleUI
 {
-
     public static class Localization
     {
         private static string lang = "az";
@@ -11,7 +10,6 @@ namespace ConsoleUI
         private static readonly Dictionary<string, Dictionary<string, string>> messages =
             new Dictionary<string, Dictionary<string, string>>(StringComparer.OrdinalIgnoreCase)
             {
-
                 ["az"] = new Dictionary<string, string>
                 {
                     ["LibraryTitle"] = "📚 Kitabxana İdarəetmə Sistemi - Console UI",
@@ -34,12 +32,34 @@ namespace ConsoleUI
                     ["Search"] = "Axtar",
                     ["Back"] = "Geri",
                     ["Choice"] = "Seçim:",
+
                     ["Title"] = "Başlıq",
                     ["Author"] = "Müəllif",
                     ["ISBN"] = "ISBN (13 simvol)",
                     ["PublishedYear"] = "Nəşr ili",
                     ["CategoryId"] = "KateqoriyaId",
                     ["IsAvailable"] = "Mövcuddurmu",
+
+                    // --- KİTAB CƏDVƏLİ ---
+                    ["ColTitle"] = "Kitabın adı",
+                    ["ColAuthor"] = "Müəllifin adı",
+                    ["ColISBN"] = "ISBN",
+                    ["ColYear"] = "İl",
+                    ["ColCat"] = "Kateqoriya",
+                    ["ColStatus"] = "Vəziyyəti",
+
+                    // --- KATEQORİYA CƏDVƏLİ ---
+                    ["ColCatId"] = "ID",
+                    ["ColCatName"] = "Kateqoriya Adı",
+                    ["ColCatDesc"] = "Təsvir",
+
+                    // --- MEMBER CƏDVƏLİ ---
+                    ["ColMemId"] = "ID",
+                    ["ColMemName"] = "Adı Soyadı",
+                    ["ColMemEmail"] = "E-poçt",
+                    ["ColMemPhone"] = "Telefon",
+                    ["ColMemStatus"] = "Status",
+
                     ["BookCreated"] = "Kitab yaradıldı.",
                     ["NoBooks"] = "Kitab yoxdur.",
                     ["InvalidId"] = "Yanlış id.",
@@ -68,7 +88,6 @@ namespace ConsoleUI
                     ["CategoryExists"] = "Bu kateqoriya artıq mövcuddur."
                 },
 
-
                 ["en"] = new Dictionary<string, string>
                 {
                     ["LibraryTitle"] = "📚 Library Management System - Console UI",
@@ -91,12 +110,32 @@ namespace ConsoleUI
                     ["Search"] = "Search",
                     ["Back"] = "Back",
                     ["Choice"] = "Choice:",
+
                     ["Title"] = "Title",
                     ["Author"] = "Author",
                     ["ISBN"] = "ISBN (13 chars)",
                     ["PublishedYear"] = "Published Year",
                     ["CategoryId"] = "CategoryId",
                     ["IsAvailable"] = "IsAvailable",
+
+                    // Table Headers
+                    ["ColTitle"] = "Book Name",
+                    ["ColAuthor"] = "Author Name",
+                    ["ColISBN"] = "ISBN",
+                    ["ColYear"] = "Year",
+                    ["ColCat"] = "Category",
+                    ["ColStatus"] = "Status",
+
+                    ["ColCatId"] = "ID",
+                    ["ColCatName"] = "Category Name",
+                    ["ColCatDesc"] = "Description",
+
+                    ["ColMemId"] = "ID",
+                    ["ColMemName"] = "Full Name",
+                    ["ColMemEmail"] = "Email",
+                    ["ColMemPhone"] = "Phone",
+                    ["ColMemStatus"] = "Status",
+
                     ["BookCreated"] = "Book created.",
                     ["NoBooks"] = "No books.",
                     ["InvalidId"] = "Invalid id.",
@@ -125,7 +164,6 @@ namespace ConsoleUI
                     ["CategoryExists"] = "A category with this name already exists."
                 },
 
-
                 ["ru"] = new Dictionary<string, string>
                 {
                     ["LibraryTitle"] = "📚 Система управления библиотекой - Console UI",
@@ -148,12 +186,32 @@ namespace ConsoleUI
                     ["Search"] = "Поиск",
                     ["Back"] = "Назад",
                     ["Choice"] = "Выбор:",
+
                     ["Title"] = "Название",
                     ["Author"] = "Автор",
                     ["ISBN"] = "ISBN (13 символов)",
                     ["PublishedYear"] = "Год издания",
                     ["CategoryId"] = "CategoryId",
                     ["IsAvailable"] = "Доступна ли",
+
+                    // Table Headers
+                    ["ColTitle"] = "Название книги",
+                    ["ColAuthor"] = "Имя автора",
+                    ["ColISBN"] = "ISBN",
+                    ["ColYear"] = "Год",
+                    ["ColCat"] = "Категория",
+                    ["ColStatus"] = "Статус",
+
+                    ["ColCatId"] = "ID",
+                    ["ColCatName"] = "Имя категории",
+                    ["ColCatDesc"] = "Описание",
+
+                    ["ColMemId"] = "ID",
+                    ["ColMemName"] = "Полное имя",
+                    ["ColMemEmail"] = "Эл.почта",
+                    ["ColMemPhone"] = "Телефон",
+                    ["ColMemStatus"] = "Статус",
+
                     ["BookCreated"] = "Книга создана.",
                     ["NoBooks"] = "Книг нет.",
                     ["InvalidId"] = "Неверный id.",
@@ -182,7 +240,6 @@ namespace ConsoleUI
                     ["CategoryExists"] = "Категория с таким именем уже существует."
                 },
 
-
                 ["zh"] = new Dictionary<string, string>
                 {
                     ["LibraryTitle"] = "📚 图书馆管理系统 - 控制台 UI",
@@ -205,12 +262,32 @@ namespace ConsoleUI
                     ["Search"] = "搜索",
                     ["Back"] = "返回",
                     ["Choice"] = "选择：",
+
                     ["Title"] = "标题",
                     ["Author"] = "作者",
                     ["ISBN"] = "ISBN（13位）",
                     ["PublishedYear"] = "出版年份",
                     ["CategoryId"] = "类别Id",
                     ["IsAvailable"] = "可用",
+
+                    // Table Headers
+                    ["ColTitle"] = "书名",
+                    ["ColAuthor"] = "作者姓名",
+                    ["ColISBN"] = "ISBN",
+                    ["ColYear"] = "年份",
+                    ["ColCat"] = "类别",
+                    ["ColStatus"] = "状态",
+
+                    ["ColCatId"] = "ID",
+                    ["ColCatName"] = "类别名称",
+                    ["ColCatDesc"] = "描述",
+
+                    ["ColMemId"] = "ID",
+                    ["ColMemName"] = "全名",
+                    ["ColMemEmail"] = "电子邮件",
+                    ["ColMemPhone"] = "电话",
+                    ["ColMemStatus"] = "状态",
+
                     ["BookCreated"] = "图书已创建。",
                     ["NoBooks"] = "没有图书。",
                     ["InvalidId"] = "无效的ID。",
@@ -239,7 +316,6 @@ namespace ConsoleUI
                     ["CategoryExists"] = "具有此名称的类别已存在。"
                 },
 
-
                 ["fr"] = new Dictionary<string, string>
                 {
                     ["LibraryTitle"] = "📚 Système de gestion de bibliothèque - Console UI",
@@ -262,12 +338,32 @@ namespace ConsoleUI
                     ["Search"] = "Rechercher",
                     ["Back"] = "Retour",
                     ["Choice"] = "Choix :",
+
                     ["Title"] = "Titre",
                     ["Author"] = "Auteur",
                     ["ISBN"] = "ISBN (13 caractères)",
                     ["PublishedYear"] = "Année de publication",
                     ["CategoryId"] = "CategoryId",
                     ["IsAvailable"] = "Disponible",
+
+                    // Table Headers
+                    ["ColTitle"] = "Nom du livre",
+                    ["ColAuthor"] = "Nom de l'auteur",
+                    ["ColISBN"] = "ISBN",
+                    ["ColYear"] = "Année",
+                    ["ColCat"] = "Catégorie",
+                    ["ColStatus"] = "État",
+
+                    ["ColCatId"] = "ID",
+                    ["ColCatName"] = "Nom de catégorie",
+                    ["ColCatDesc"] = "Description",
+
+                    ["ColMemId"] = "ID",
+                    ["ColMemName"] = "Nom complet",
+                    ["ColMemEmail"] = "E-mail",
+                    ["ColMemPhone"] = "Téléphone",
+                    ["ColMemStatus"] = "État",
+
                     ["BookCreated"] = "Livre créé.",
                     ["NoBooks"] = "Aucun livre.",
                     ["InvalidId"] = "Id invalide.",
@@ -296,7 +392,6 @@ namespace ConsoleUI
                     ["CategoryExists"] = "Une catégorie avec ce nom existe déjà."
                 },
 
-
                 ["de"] = new Dictionary<string, string>
                 {
                     ["LibraryTitle"] = "📚 Bibliotheksverwaltung - Console UI",
@@ -319,12 +414,32 @@ namespace ConsoleUI
                     ["Search"] = "Suchen",
                     ["Back"] = "Zurück",
                     ["Choice"] = "Auswahl:",
+
                     ["Title"] = "Titel",
                     ["Author"] = "Autor",
                     ["ISBN"] = "ISBN (13 Zeichen)",
                     ["PublishedYear"] = "Erscheinungsjahr",
                     ["CategoryId"] = "CategoryId",
                     ["IsAvailable"] = "Verfügbar",
+
+                    // Table Headers
+                    ["ColTitle"] = "Buchtitel",
+                    ["ColAuthor"] = "Autorenname",
+                    ["ColISBN"] = "ISBN",
+                    ["ColYear"] = "Jahr",
+                    ["ColCat"] = "Kategorie",
+                    ["ColStatus"] = "Status",
+
+                    ["ColCatId"] = "ID",
+                    ["ColCatName"] = "Kategoriename",
+                    ["ColCatDesc"] = "Beschreibung",
+
+                    ["ColMemId"] = "ID",
+                    ["ColMemName"] = "Vollständiger Name",
+                    ["ColMemEmail"] = "E-Mail",
+                    ["ColMemPhone"] = "Telefon",
+                    ["ColMemStatus"] = "Status",
+
                     ["BookCreated"] = "Buch erstellt.",
                     ["NoBooks"] = "Keine Bücher.",
                     ["InvalidId"] = "Ungültige Id.",
@@ -353,7 +468,6 @@ namespace ConsoleUI
                     ["CategoryExists"] = "Eine Kategorie mit diesem Namen existiert bereits."
                 },
 
-
                 ["it"] = new Dictionary<string, string>
                 {
                     ["LibraryTitle"] = "📚 Sistema di gestione della biblioteca - Console UI",
@@ -376,12 +490,32 @@ namespace ConsoleUI
                     ["Search"] = "Cerca",
                     ["Back"] = "Indietro",
                     ["Choice"] = "Scelta:",
+
                     ["Title"] = "Titolo",
                     ["Author"] = "Autore",
                     ["ISBN"] = "ISBN (13 caratteri)",
                     ["PublishedYear"] = "Anno di pubblicazione",
                     ["CategoryId"] = "CategoryId",
                     ["IsAvailable"] = "Disponibile",
+
+                    // Table Headers
+                    ["ColTitle"] = "Nome del libro",
+                    ["ColAuthor"] = "Nome dell'autore",
+                    ["ColISBN"] = "ISBN",
+                    ["ColYear"] = "Anno",
+                    ["ColCat"] = "Categoria",
+                    ["ColStatus"] = "Stato",
+
+                    ["ColCatId"] = "ID",
+                    ["ColCatName"] = "Nome categoria",
+                    ["ColCatDesc"] = "Descrizione",
+
+                    ["ColMemId"] = "ID",
+                    ["ColMemName"] = "Nome completo",
+                    ["ColMemEmail"] = "Email",
+                    ["ColMemPhone"] = "Telefono",
+                    ["ColMemStatus"] = "Stato",
+
                     ["BookCreated"] = "Libro creato.",
                     ["NoBooks"] = "Nessun libro.",
                     ["InvalidId"] = "Id non valido.",
@@ -410,7 +544,6 @@ namespace ConsoleUI
                     ["CategoryExists"] = "Esiste già una categoria con questo nome."
                 },
 
-
                 ["es"] = new Dictionary<string, string>
                 {
                     ["LibraryTitle"] = "📚 Sistema de gestión de biblioteca - Console UI",
@@ -433,12 +566,32 @@ namespace ConsoleUI
                     ["Search"] = "Buscar",
                     ["Back"] = "Atrás",
                     ["Choice"] = "Elección:",
+
                     ["Title"] = "Título",
                     ["Author"] = "Autor",
                     ["ISBN"] = "ISBN (13 caracteres)",
                     ["PublishedYear"] = "Año de publicación",
                     ["CategoryId"] = "CategoryId",
                     ["IsAvailable"] = "Disponible",
+
+                    // Table Headers
+                    ["ColTitle"] = "Nombre del libro",
+                    ["ColAuthor"] = "Nombre del autor",
+                    ["ColISBN"] = "ISBN",
+                    ["ColYear"] = "Año",
+                    ["ColCat"] = "Categoría",
+                    ["ColStatus"] = "Estado",
+
+                    ["ColCatId"] = "ID",
+                    ["ColCatName"] = "Nombre de la categoría",
+                    ["ColCatDesc"] = "Descripción",
+
+                    ["ColMemId"] = "ID",
+                    ["ColMemName"] = "Nombre completo",
+                    ["ColMemEmail"] = "Correo",
+                    ["ColMemPhone"] = "Teléfono",
+                    ["ColMemStatus"] = "Estado",
+
                     ["BookCreated"] = "Libro creado.",
                     ["NoBooks"] = "No hay libros.",
                     ["InvalidId"] = "Id inválido.",
@@ -468,7 +621,6 @@ namespace ConsoleUI
                 }
             };
 
-
         public static void SetLanguage(string language)
         {
             if (string.IsNullOrWhiteSpace(language)) language = "az";
@@ -476,7 +628,6 @@ namespace ConsoleUI
             if (l != "az" && l != "en" && l != "ru" && l != "zh" && l != "fr" && l != "de" && l != "it" && l != "es") l = "az";
             lang = l;
         }
-
 
         public static string T(string key)
         {
@@ -487,7 +638,6 @@ namespace ConsoleUI
             if (messages["az"].TryGetValue(key, out var fallback)) return fallback;
             return key;
         }
-
 
         public static void SelectLanguageInteractive()
         {
@@ -515,7 +665,6 @@ namespace ConsoleUI
                 case "8": LocalSettings.Instance.Language = "es"; break;
                 default: LocalSettings.Instance.Language = "az"; break;
             }
-
 
             SetLanguage(LocalSettings.Instance.Language);
             LocalSettings.Instance.Save();

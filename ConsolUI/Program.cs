@@ -27,13 +27,13 @@ namespace ConsoleUI
         static void Main(string[] args)
         {
             Console.OutputEncoding = Encoding.UTF8;
-            UI.EnableVirtualTerminalProcessing(); // enable ANSI truecolor where possible
+            Console.InputEncoding = Encoding.UTF8;
+
+            UI.EnableVirtualTerminalProcessing();
             DataContext.EnsureDataFiles();
 
-            // Load settings
             LocalSettings.Load();
 
-            // Show language selection (delegated to Localization)
             Localization.SelectLanguageInteractive();
             UI.WriteSuccess("✅ " + UI.T("LanguageSaved"));
 
@@ -72,10 +72,24 @@ namespace ConsoleUI
             Thread.Sleep(300);
         }
 
+        static string GenerateUniqueIsbn()
+        {
+            Random random = new Random();
+            string newIsbn;
+            bool exists;
+            do
+            {
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < 13; i++) sb.Append(random.Next(0, 10));
+                newIsbn = sb.ToString();
+                exists = bookService.GetAll().Any(b => b.ISBN == newIsbn);
+            } while (exists);
+            return newIsbn;
+        }
+
         #region BookMenu
         static void BookMenu()
         {
-            // Print menu once and keep it visible; later we only clear action area
             UI.ClearAndRenderHeader();
             UI.WriteLine("");
             UI.WriteColoredLine("1: 🟢 " + UI.T("Create"), ConsoleColor.Green);
@@ -86,48 +100,27 @@ namespace ConsoleUI
             UI.WriteColoredLine("6: 🔍 " + UI.T("Search"), ConsoleColor.Blue);
             UI.WriteLine("0: ◀️ " + UI.T("Back"));
 
-            // where action content (prompts, results) will start
-            int actionAreaStart = Console.CursorTop;
-
+            int areaStart = Console.CursorTop;
             while (true)
             {
+                Console.SetCursorPosition(0, areaStart);
+                UI.ClearFromLine(areaStart);
                 UI.Write(UI.T("Choice") + " ");
                 var c = Console.ReadLine();
-                if (c == "0")
-                {
-                    // clear only action area and return (menu removed)
-                    UI.ClearFromLine(actionAreaStart);
-                    return;
-                }
-
+                if (c == "0") return;
                 switch (c)
                 {
-                    case "1":
-                        CreateBookFlow(actionAreaStart);
-                        break;
-                    case "2":
-                        ListBooksFlow(actionAreaStart);
-                        break;
-                    case "3":
-                        GetBookByIdFlow(actionAreaStart);
-                        break;
-                    case "4":
-                        UpdateBookFlow(actionAreaStart);
-                        break;
-                    case "5":
-                        DeleteBookFlow(actionAreaStart);
-                        break;
-                    case "6":
-                        SearchBooksFlow(actionAreaStart);
-                        break;
-                    default:
-                        UI.DisplayTransientMessage("❌ " + UI.T("InvalidChoice"), 900, actionAreaStart);
-                        break;
+                    case "1": CreateBookFlow(areaStart); break;
+                    case "2": ListBooksFlow(areaStart); break;
+                    case "3": GetBookByIdFlow(areaStart); break;
+                    case "4": UpdateBookFlow(areaStart); break;
+                    case "5": DeleteBookFlow(areaStart); break;
+                    case "6": SearchBooksFlow(areaStart); break;
+                    default: UI.DisplayTransientMessage("❌ " + UI.T("InvalidChoice"), 900, areaStart); break;
                 }
             }
         }
 
-        // Each flow uses areaStart to clear its own prompts/results after finish
         static void CreateBookFlow(int areaStart)
         {
             int start = Console.CursorTop;
@@ -135,32 +128,20 @@ namespace ConsoleUI
             {
                 UI.Write("🖊️ " + UI.T("Title") + ": "); var title = Console.ReadLine();
                 UI.Write("✍️ " + UI.T("Author") + ": "); var author = Console.ReadLine();
-                UI.Write("🔢 " + UI.T("ISBN") + ": "); var isbn = Console.ReadLine();
+                string isbn = GenerateUniqueIsbn();
+                UI.WriteColoredLine("🔢 " + UI.T("ISBN") + " (Auto): " + isbn, ConsoleColor.Cyan);
                 UI.Write("📅 " + UI.T("PublishedYear") + ": "); var yearS = Console.ReadLine();
                 UI.Write("🗂️ " + UI.T("CategoryId") + ": "); var catS = Console.ReadLine();
                 int year = int.TryParse(yearS, out var y) ? y : 0;
                 int catId = int.TryParse(catS, out var cc) ? cc : 0;
                 var book = new Book { Title = title, Author = author, ISBN = isbn, PublishedYear = year, CategoryId = catId, IsAvailable = true };
                 bookService.Create(book);
-                UI.DisplayTransientMessage("✅ " + UI.T("BookCreated"), 1000, start);
+                UI.DisplayTransientMessage("✅ Book added successfully!", 1500, areaStart);
             }
             catch (Exception ex)
             {
                 UI.DisplayTransientMessage("❗ " + UI.T("Error") + ": " + ex.Message, 1400, start);
-            }
-            finally
-            {
-                // clear action area (prompts + message)
                 UI.ClearFromLine(areaStart);
-                // reprint menu options area so user can choose again
-                // (we'll re-print lines under header)
-                UI.WriteColoredLine("1: 🟢 " + UI.T("Create"), ConsoleColor.Green);
-                UI.WriteRgbLine("2: 🎯 " + UI.T("List"), 30, 144, 255);
-                UI.WriteColoredLine("3: 🔎 " + UI.T("GetById"), ConsoleColor.White);
-                UI.WriteColoredLine("4: ✏️ " + UI.T("Update"), ConsoleColor.Yellow);
-                UI.WriteColoredLine("5: 🗑️ " + UI.T("Delete"), ConsoleColor.Red);
-                UI.WriteColoredLine("6: 🔍 " + UI.T("Search"), ConsoleColor.Blue);
-                UI.WriteLine("0: ◀️ " + UI.T("Back"));
             }
         }
 
@@ -169,75 +150,61 @@ namespace ConsoleUI
             int start = Console.CursorTop;
             UI.SpinnerAnsi("🔎 " + UI.T("Loading"), 600, 30, 144, 255);
             var list = bookService.GetAll();
+            var categories = categoryService.GetAll();
+
             if (!list.Any())
             {
                 UI.DisplayTransientMessage("ℹ️ " + UI.T("NoBooks"), 900, start);
             }
             else
             {
+                string format = "{0,-4} {1,-25} {2,-20} {3,-15} {4,-6} {5,-15} {6,-10}";
+                UI.WriteColoredLine(string.Format(format, "ID", UI.T("ColTitle"), UI.T("ColAuthor"), "ISBN", UI.T("ColYear"), UI.T("ColCat"), UI.T("ColStatus")), ConsoleColor.Yellow);
+                UI.WriteLine(new string('-', 105));
+
                 int idx = 0;
                 foreach (var b in list)
                 {
+                    var catName = categories.FirstOrDefault(c => c.Id == b.CategoryId)?.Name ?? "Yoxdur";
+                    string title = b.Title.Length > 22 ? b.Title.Substring(0, 22) + ".." : b.Title;
+                    string author = b.Author.Length > 17 ? b.Author.Substring(0, 17) + ".." : b.Author;
+                    string cat = catName.Length > 12 ? catName.Substring(0, 12) + ".." : catName;
+                    string status = b.IsAvailable ? "+" : "-";
                     var color = (idx % 2 == 0) ? ConsoleColor.Gray : ConsoleColor.DarkGray;
-                    UI.WriteColoredLine($"{b.Id}: {b.Title} | {b.Author} | ISBN:{b.ISBN} | Year:{b.PublishedYear} | Cat:{b.CategoryId} | Available:{b.IsAvailable}", color);
+                    UI.WriteColoredLine(string.Format(format, b.Id, title, author, b.ISBN, b.PublishedYear, cat, status), color);
                     idx++;
                 }
                 UI.WaitForEnterAndClearFrom(areaStart, UI.T("PressEnterToContinue"));
             }
-            UI.ClearFromLine(areaStart);
-            // re-print menu
-            UI.WriteColoredLine("1: 🟢 " + UI.T("Create"), ConsoleColor.Green);
-            UI.WriteRgbLine("2: 🎯 " + UI.T("List"), 30, 144, 255);
-            UI.WriteColoredLine("3: 🔎 " + UI.T("GetById"), ConsoleColor.White);
-            UI.WriteColoredLine("4: ✏️ " + UI.T("Update"), ConsoleColor.Yellow);
-            UI.WriteColoredLine("5: 🗑️ " + UI.T("Delete"), ConsoleColor.Red);
-            UI.WriteColoredLine("6: 🔍 " + UI.T("Search"), ConsoleColor.Blue);
-            UI.WriteLine("0: ◀️ " + UI.T("Back"));
         }
 
         static void GetBookByIdFlow(int areaStart)
         {
             int start = Console.CursorTop;
             UI.Write("🔢 " + UI.T("Id") + ": "); var idS = Console.ReadLine();
-            if (!int.TryParse(idS, out int id))
-            {
-                UI.DisplayTransientMessage("❌ " + UI.T("InvalidId"), 900, start);
-            }
+            if (!int.TryParse(idS, out int id)) { UI.DisplayTransientMessage("❌ " + UI.T("InvalidId"), 900, start); UI.ClearFromLine(areaStart); }
             else
             {
                 var b = bookService.Get(id);
-                if (b == null) UI.DisplayTransientMessage("ℹ️ " + UI.T("NotFound"), 900, start);
+                if (b == null) { UI.DisplayTransientMessage("ℹ️ " + UI.T("NotFound"), 900, start); UI.ClearFromLine(areaStart); }
                 else
                 {
-                    UI.WriteColoredLine($"{b.Id}: {b.Title} | {b.Author} | ISBN:{b.ISBN} | Year:{b.PublishedYear} | Cat:{b.CategoryId} | Available:{b.IsAvailable}", ConsoleColor.White);
+                    var catName = categoryService.Get(b.CategoryId)?.Name ?? "Yoxdur";
+                    UI.WriteColoredLine($"{b.Id}: {b.Title} | {b.Author} | ISBN:{b.ISBN} | Year:{b.PublishedYear} | Cat: {catName} | Available:{b.IsAvailable}", ConsoleColor.White);
                     UI.WaitForEnterAndClearFrom(areaStart, UI.T("PressEnterToContinue"));
                 }
             }
-            UI.ClearFromLine(areaStart);
-            UI.WriteColoredLine("1: 🟢 " + UI.T("Create"), ConsoleColor.Green);
-            UI.WriteRgbLine("2: 🎯 " + UI.T("List"), 30, 144, 255);
-            UI.WriteColoredLine("3: 🔎 " + UI.T("GetById"), ConsoleColor.White);
-            UI.WriteColoredLine("4: ✏️ " + UI.T("Update"), ConsoleColor.Yellow);
-            UI.WriteColoredLine("5: 🗑️ " + UI.T("Delete"), ConsoleColor.Red);
-            UI.WriteColoredLine("6: 🔍 " + UI.T("Search"), ConsoleColor.Blue);
-            UI.WriteLine("0: ◀️ " + UI.T("Back"));
         }
 
         static void UpdateBookFlow(int areaStart)
         {
             int start = Console.CursorTop;
             UI.Write("🔢 " + UI.T("Id") + ": "); var idS = Console.ReadLine();
-            if (!int.TryParse(idS, out int id))
-            {
-                UI.DisplayTransientMessage("❌ " + UI.T("InvalidId"), 900, start);
-            }
+            if (!int.TryParse(idS, out int id)) { UI.DisplayTransientMessage("❌ " + UI.T("InvalidId"), 900, start); UI.ClearFromLine(areaStart); }
             else
             {
                 var existing = bookService.Get(id);
-                if (existing == null)
-                {
-                    UI.DisplayTransientMessage("ℹ️ " + UI.T("NotFound"), 900, start);
-                }
+                if (existing == null) { UI.DisplayTransientMessage("ℹ️ " + UI.T("NotFound"), 900, start); UI.ClearFromLine(areaStart); }
                 else
                 {
                     UI.Write($"🖊️ {UI.T("Title")} ({existing.Title}): "); var title = Console.ReadLine();
@@ -256,65 +223,51 @@ namespace ConsoleUI
                     else if (!string.IsNullOrWhiteSpace(availS) && (availS == "0" || availS.ToLower() == "false")) existing.IsAvailable = false;
 
                     bookService.Update(existing);
-                    UI.DisplayTransientMessage("✅ " + UI.T("Updated"), 1000, start);
+                    UI.DisplayTransientMessage("✅ Book updated successfully!", 1500, areaStart);
                 }
             }
-            UI.ClearFromLine(areaStart);
-            UI.WriteColoredLine("1: 🟢 " + UI.T("Create"), ConsoleColor.Green);
-            UI.WriteRgbLine("2: 🎯 " + UI.T("List"), 30, 144, 255);
-            UI.WriteColoredLine("3: 🔎 " + UI.T("GetById"), ConsoleColor.White);
-            UI.WriteColoredLine("4: ✏️ " + UI.T("Update"), ConsoleColor.Yellow);
-            UI.WriteColoredLine("5: 🗑️ " + UI.T("Delete"), ConsoleColor.Red);
-            UI.WriteColoredLine("6: 🔍 " + UI.T("Search"), ConsoleColor.Blue);
-            UI.WriteLine("0: ◀️ " + UI.T("Back"));
         }
 
         static void DeleteBookFlow(int areaStart)
         {
             int start = Console.CursorTop;
             UI.Write("🔢 " + UI.T("Id") + ": "); var idS = Console.ReadLine();
-            if (!int.TryParse(idS, out int id))
-            {
-                UI.DisplayTransientMessage("❌ " + UI.T("InvalidId"), 900, start);
-            }
-            else
-            {
-                bookService.Delete(id);
-                UI.DisplayTransientMessage("🗑️ " + UI.T("Deleted"), 1000, start);
-            }
-            UI.ClearFromLine(areaStart);
-            UI.WriteColoredLine("1: 🟢 " + UI.T("Create"), ConsoleColor.Green);
-            UI.WriteRgbLine("2: 🎯 " + UI.T("List"), 30, 144, 255);
-            UI.WriteColoredLine("3: 🔎 " + UI.T("GetById"), ConsoleColor.White);
-            UI.WriteColoredLine("4: ✏️ " + UI.T("Update"), ConsoleColor.Yellow);
-            UI.WriteColoredLine("5: 🗑️ " + UI.T("Delete"), ConsoleColor.Red);
-            UI.WriteColoredLine("6: 🔍 " + UI.T("Search"), ConsoleColor.Blue);
-            UI.WriteLine("0: ◀️ " + UI.T("Back"));
+            if (!int.TryParse(idS, out int id)) { UI.DisplayTransientMessage("❌ " + UI.T("InvalidId"), 900, start); UI.ClearFromLine(areaStart); }
+            else { bookService.Delete(id); UI.DisplayTransientMessage("🗑️ Book deleted successfully!", 1500, areaStart); }
         }
 
         static void SearchBooksFlow(int areaStart)
         {
             int start = Console.CursorTop;
-            UI.Write("🔎 " + UI.T("Keyword") + " (" + UI.T("TitleAuthorCatId") + "): "); var kw = Console.ReadLine();
-            var res = bookService.Search(kw);
-            if (!res.Any()) UI.DisplayTransientMessage("ℹ️ " + UI.T("NoResults"), 900, start);
+            UI.Write("🔎 " + UI.T("Keyword") + " (Ad, Avtor və ya Kateqoriya): ");
+            var kw = Console.ReadLine()?.ToLower();
+            if (string.IsNullOrWhiteSpace(kw)) { UI.DisplayTransientMessage("ℹ️ " + UI.T("NoResults"), 900, start); UI.ClearFromLine(areaStart); return; }
+
+            var allBooks = bookService.GetAll();
+            var allCategories = categoryService.GetAll();
+            var res = allBooks.Where(b => b.Title.ToLower().Contains(kw) || b.Author.ToLower().Contains(kw) || (allCategories.FirstOrDefault(c => c.Id == b.CategoryId)?.Name.ToLower().Contains(kw) ?? false)).ToList();
+
+            if (!res.Any()) { UI.DisplayTransientMessage("ℹ️ " + UI.T("NoResults"), 900, start); UI.ClearFromLine(areaStart); }
             else
             {
-                foreach (var b in res) UI.WriteColoredLine($"{b.Id}: {b.Title} | {b.Author} | Cat:{b.CategoryId}", ConsoleColor.DarkBlue);
+                string format = "{0,-4} {1,-25} {2,-20} {3,-15} {4,-15}";
+                UI.WriteLine("");
+                UI.WriteColoredLine(string.Format(format, "ID", UI.T("ColTitle"), UI.T("ColAuthor"), "ISBN", UI.T("ColCat")), ConsoleColor.Yellow);
+                UI.WriteLine(new string('-', 85));
+                foreach (var b in res)
+                {
+                    var catName = allCategories.FirstOrDefault(c => c.Id == b.CategoryId)?.Name ?? "Yoxdur";
+                    string title = b.Title.Length > 22 ? b.Title.Substring(0, 22) + ".." : b.Title;
+                    string author = b.Author.Length > 17 ? b.Author.Substring(0, 17) + ".." : b.Author;
+                    string cat = catName.Length > 12 ? catName.Substring(0, 12) + ".." : catName;
+                    UI.WriteColoredLine(string.Format(format, b.Id, title, author, b.ISBN, cat), ConsoleColor.DarkBlue);
+                }
                 UI.WaitForEnterAndClearFrom(areaStart, UI.T("PressEnterToContinue"));
             }
-            UI.ClearFromLine(areaStart);
-            UI.WriteColoredLine("1: 🟢 " + UI.T("Create"), ConsoleColor.Green);
-            UI.WriteRgbLine("2: 🎯 " + UI.T("List"), 30, 144, 255);
-            UI.WriteColoredLine("3: 🔎 " + UI.T("GetById"), ConsoleColor.White);
-            UI.WriteColoredLine("4: ✏️ " + UI.T("Update"), ConsoleColor.Yellow);
-            UI.WriteColoredLine("5: 🗑️ " + UI.T("Delete"), ConsoleColor.Red);
-            UI.WriteColoredLine("6: 🔍 " + UI.T("Search"), ConsoleColor.Blue);
-            UI.WriteLine("0: ◀️ " + UI.T("Back"));
         }
         #endregion
 
-        #region CategoryMenu (same pattern)
+        #region CategoryMenu
         static void CategoryMenu()
         {
             UI.ClearAndRenderHeader();
@@ -330,32 +283,20 @@ namespace ConsoleUI
             int areaStart = Console.CursorTop;
             while (true)
             {
+                Console.SetCursorPosition(0, areaStart);
+                UI.ClearFromLine(areaStart);
                 UI.Write(UI.T("Choice") + " ");
                 var c = Console.ReadLine();
-                if (c == "0") { UI.ClearFromLine(areaStart); return; }
+                if (c == "0") return;
                 switch (c)
                 {
-                    case "1":
-                        CreateCategoryFlow(areaStart);
-                        break;
-                    case "2":
-                        ListCategoriesFlow(areaStart);
-                        break;
-                    case "3":
-                        GetCategoryByIdFlow(areaStart);
-                        break;
-                    case "4":
-                        UpdateCategoryFlow(areaStart);
-                        break;
-                    case "5":
-                        DeleteCategoryFlow(areaStart);
-                        break;
-                    case "6":
-                        SearchCategoriesFlow(areaStart);
-                        break;
-                    default:
-                        UI.DisplayTransientMessage("❌ " + UI.T("InvalidChoice"), 900, areaStart);
-                        break;
+                    case "1": CreateCategoryFlow(areaStart); break;
+                    case "2": ListCategoriesFlow(areaStart); break;
+                    case "3": GetCategoryByIdFlow(areaStart); break;
+                    case "4": UpdateCategoryFlow(areaStart); break;
+                    case "5": DeleteCategoryFlow(areaStart); break;
+                    case "6": SearchCategoriesFlow(areaStart); break;
+                    default: UI.DisplayTransientMessage("❌ " + UI.T("InvalidChoice"), 900, areaStart); break;
                 }
             }
         }
@@ -369,81 +310,80 @@ namespace ConsoleUI
                 UI.Write("✍️ " + UI.T("Description") + ": "); var desc = Console.ReadLine();
                 var c = new Category { Name = name, Description = desc };
                 categoryService.Create(c);
-                UI.DisplayTransientMessage("✅ " + UI.T("CategoryCreated"), 1000, start);
+                UI.DisplayTransientMessage("✅ Category added successfully!", 1500, areaStart);
             }
-            catch (Exception ex) { UI.DisplayTransientMessage("❗ " + UI.T("Error") + ": " + ex.Message, 1400, start); }
-            UI.ClearFromLine(areaStart);
-            // reprint menu options
-            UI.WriteColoredLine("1: 🟢 " + UI.T("Create"), ConsoleColor.Green);
-            UI.WriteRgbLine("2: 🎯 " + UI.T("List"), 199, 21, 133);
-            UI.WriteColoredLine("3: 🔎 " + UI.T("GetById"), ConsoleColor.White);
-            UI.WriteColoredLine("4: ✏️ " + UI.T("Update"), ConsoleColor.Yellow);
-            UI.WriteColoredLine("5: 🗑️ " + UI.T("Delete"), ConsoleColor.Red);
-            UI.WriteColoredLine("6: 🔍 " + UI.T("Search"), ConsoleColor.Blue);
-            UI.WriteLine("0: ◀️ " + UI.T("Back"));
+            catch (Exception ex)
+            {
+                UI.DisplayTransientMessage("❗ " + UI.T("Error") + ": " + ex.Message, 1400, start);
+                UI.ClearFromLine(areaStart);
+            }
         }
 
         static void ListCategoriesFlow(int areaStart)
         {
             int start = Console.CursorTop;
             UI.SpinnerAnsi("🔎 " + UI.T("Loading"), 500, 199, 21, 133);
-            var list = categoryService.GetAll();
-            if (!list.Any()) UI.DisplayTransientMessage("ℹ️ " + UI.T("NoCategories"), 900, start);
+            var categories = categoryService.GetAll();
+            var allBooks = bookService.GetAll();
+
+            if (!categories.Any())
+            {
+                UI.DisplayTransientMessage("ℹ️ " + UI.T("NoCategories"), 900, start);
+                UI.ClearFromLine(areaStart);
+            }
             else
             {
-                int idx = 0;
-                foreach (var c in list)
+                string format = "{0,-5} {1,-20} {2,-30}";
+                UI.WriteColoredLine(string.Format(format, UI.T("ColCatId"), UI.T("ColCatName"), UI.T("ColCatDesc")), ConsoleColor.Magenta);
+                UI.WriteLine(new string('-', 60));
+
+                foreach (var c in categories)
                 {
-                    var color = (idx % 2 == 0) ? ConsoleColor.Magenta : ConsoleColor.DarkMagenta;
-                    UI.WriteColoredLine($"{c.Id}: {c.Name} | {c.Description}", color);
-                    idx++;
+                    UI.WriteColoredLine(string.Format(format, c.Id, c.Name, c.Description), ConsoleColor.White);
+                    var catBooks = allBooks.Where(b => b.CategoryId == c.Id).ToList();
+                    if (catBooks.Any())
+                    {
+                        foreach (var b in catBooks)
+                        {
+                            UI.WriteColoredLine($"      └── 📖 {b.Title} ({b.Author})", ConsoleColor.DarkGray);
+                        }
+                    }
+                    else
+                    {
+                        UI.WriteColoredLine("      └── (Kitab yoxdur)", ConsoleColor.DarkGray);
+                    }
+                    UI.WriteLine("");
                 }
                 UI.WaitForEnterAndClearFrom(areaStart, UI.T("PressEnterToContinue"));
             }
-            UI.ClearFromLine(areaStart);
-            UI.WriteColoredLine("1: 🟢 " + UI.T("Create"), ConsoleColor.Green);
-            UI.WriteRgbLine("2: 🎯 " + UI.T("List"), 199, 21, 133);
-            UI.WriteColoredLine("3: 🔎 " + UI.T("GetById"), ConsoleColor.White);
-            UI.WriteColoredLine("4: ✏️ " + UI.T("Update"), ConsoleColor.Yellow);
-            UI.WriteColoredLine("5: 🗑️ " + UI.T("Delete"), ConsoleColor.Red);
-            UI.WriteColoredLine("6: 🔍 " + UI.T("Search"), ConsoleColor.Blue);
-            UI.WriteLine("0: ◀️ " + UI.T("Back"));
         }
 
         static void GetCategoryByIdFlow(int areaStart)
         {
             int start = Console.CursorTop;
             UI.Write("🔢 " + UI.T("Id") + ": "); var idS = Console.ReadLine();
-            if (!int.TryParse(idS, out int id)) UI.DisplayTransientMessage("❌ " + UI.T("InvalidId"), 900, start);
+            if (!int.TryParse(idS, out int id)) { UI.DisplayTransientMessage("❌ " + UI.T("InvalidId"), 900, start); UI.ClearFromLine(areaStart); }
             else
             {
                 var c = categoryService.Get(id);
-                if (c == null) UI.DisplayTransientMessage("ℹ️ " + UI.T("NotFound"), 900, start);
+                if (c == null) { UI.DisplayTransientMessage("ℹ️ " + UI.T("NotFound"), 900, start); UI.ClearFromLine(areaStart); }
                 else
                 {
                     UI.WriteColoredLine($"{c.Id}: {c.Name} | {c.Description}", ConsoleColor.Magenta);
                     UI.WaitForEnterAndClearFrom(areaStart, UI.T("PressEnterToContinue"));
                 }
             }
-            UI.ClearFromLine(areaStart);
-            UI.WriteColoredLine("1: 🟢 " + UI.T("Create"), ConsoleColor.Green);
-            UI.WriteRgbLine("2: 🎯 " + UI.T("List"), 199, 21, 133);
-            UI.WriteColoredLine("3: 🔎 " + UI.T("GetById"), ConsoleColor.White);
-            UI.WriteColoredLine("4: ✏️ " + UI.T("Update"), ConsoleColor.Yellow);
-            UI.WriteColoredLine("5: 🗑️ " + UI.T("Delete"), ConsoleColor.Red);
-            UI.WriteColoredLine("6: 🔍 " + UI.T("Search"), ConsoleColor.Blue);
-            UI.WriteLine("0: ◀️ " + UI.T("Back"));
         }
 
         static void UpdateCategoryFlow(int areaStart)
         {
             int start = Console.CursorTop;
             UI.Write("🔢 " + UI.T("Id") + ": "); var idS = Console.ReadLine();
-            if (!int.TryParse(idS, out int id)) UI.DisplayTransientMessage("❌ " + UI.T("InvalidId"), 900, start);
+            if (!int.TryParse(idS, out int id)) { UI.DisplayTransientMessage("❌ " + UI.T("InvalidId"), 900, start); UI.ClearFromLine(areaStart); }
             else
             {
                 var existing = categoryService.Get(id);
-                if (existing == null) UI.DisplayTransientMessage("ℹ️ " + UI.T("NotFound"), 900, start);
+                if (existing == null) { UI.DisplayTransientMessage("ℹ️ " + UI.T("NotFound"), 900, start); UI.ClearFromLine(areaStart); }
                 else
                 {
                     UI.Write($"🖊️ {UI.T("Name")} ({existing.Name}): "); var name = Console.ReadLine();
@@ -451,37 +391,17 @@ namespace ConsoleUI
                     existing.Name = string.IsNullOrWhiteSpace(name) ? existing.Name : name;
                     existing.Description = string.IsNullOrWhiteSpace(desc) ? existing.Description : desc;
                     categoryService.Update(existing);
-                    UI.DisplayTransientMessage("✅ " + UI.T("Updated"), 1000, start);
+                    UI.DisplayTransientMessage("✅ Category updated successfully!", 1500, areaStart);
                 }
             }
-            UI.ClearFromLine(areaStart);
-            UI.WriteColoredLine("1: 🟢 " + UI.T("Create"), ConsoleColor.Green);
-            UI.WriteRgbLine("2: 🎯 " + UI.T("List"), 199, 21, 133);
-            UI.WriteColoredLine("3: 🔎 " + UI.T("GetById"), ConsoleColor.White);
-            UI.WriteColoredLine("4: ✏️ " + UI.T("Update"), ConsoleColor.Yellow);
-            UI.WriteColoredLine("5: 🗑️ " + UI.T("Delete"), ConsoleColor.Red);
-            UI.WriteColoredLine("6: 🔍 " + UI.T("Search"), ConsoleColor.Blue);
-            UI.WriteLine("0: ◀️ " + UI.T("Back"));
         }
 
         static void DeleteCategoryFlow(int areaStart)
         {
             int start = Console.CursorTop;
             UI.Write("🔢 " + UI.T("Id") + ": "); var idS = Console.ReadLine();
-            if (!int.TryParse(idS, out int id)) UI.DisplayTransientMessage("❌ " + UI.T("InvalidId"), 900, start);
-            else
-            {
-                categoryService.Delete(id);
-                UI.DisplayTransientMessage("🗑️ " + UI.T("Deleted"), 1000, start);
-            }
-            UI.ClearFromLine(areaStart);
-            UI.WriteColoredLine("1: 🟢 " + UI.T("Create"), ConsoleColor.Green);
-            UI.WriteRgbLine("2: 🎯 " + UI.T("List"), 199, 21, 133);
-            UI.WriteColoredLine("3: 🔎 " + UI.T("GetById"), ConsoleColor.White);
-            UI.WriteColoredLine("4: ✏️ " + UI.T("Update"), ConsoleColor.Yellow);
-            UI.WriteColoredLine("5: 🗑️ " + UI.T("Delete"), ConsoleColor.Red);
-            UI.WriteColoredLine("6: 🔍 " + UI.T("Search"), ConsoleColor.Blue);
-            UI.WriteLine("0: ◀️ " + UI.T("Back"));
+            if (!int.TryParse(idS, out int id)) { UI.DisplayTransientMessage("❌ " + UI.T("InvalidId"), 900, start); UI.ClearFromLine(areaStart); }
+            else { categoryService.Delete(id); UI.DisplayTransientMessage("🗑️ Category deleted successfully!", 1500, areaStart); }
         }
 
         static void SearchCategoriesFlow(int areaStart)
@@ -489,24 +409,42 @@ namespace ConsoleUI
             int start = Console.CursorTop;
             UI.Write("🔎 " + UI.T("Keyword") + " (" + UI.T("Name") + "): "); var kw = Console.ReadLine();
             var res = categoryService.Search(kw);
-            if (!res.Any()) UI.DisplayTransientMessage("ℹ️ " + UI.T("NoResults"), 900, start);
+            var allBooks = bookService.GetAll();
+
+            if (!res.Any())
+            {
+                UI.DisplayTransientMessage("ℹ️ " + UI.T("NoResults"), 900, start);
+                UI.ClearFromLine(areaStart);
+            }
             else
             {
-                foreach (var c in res) UI.WriteColoredLine($"{c.Id}: {c.Name}", ConsoleColor.Magenta);
+                string format = "{0,-5} {1,-20}";
+                UI.WriteColoredLine(string.Format(format, UI.T("ColCatId"), UI.T("ColCatName")), ConsoleColor.Magenta);
+                UI.WriteLine(new string('-', 30));
+
+                foreach (var c in res)
+                {
+                    UI.WriteColoredLine(string.Format(format, c.Id, c.Name), ConsoleColor.White);
+                    var catBooks = allBooks.Where(b => b.CategoryId == c.Id).ToList();
+                    if (catBooks.Any())
+                    {
+                        foreach (var b in catBooks)
+                        {
+                            UI.WriteColoredLine($"      └── 📖 {b.Title}", ConsoleColor.DarkGray);
+                        }
+                    }
+                    else
+                    {
+                        UI.WriteColoredLine("      └── (Kitab yoxdur)", ConsoleColor.DarkGray);
+                    }
+                    UI.WriteLine("");
+                }
                 UI.WaitForEnterAndClearFrom(areaStart, UI.T("PressEnterToContinue"));
             }
-            UI.ClearFromLine(areaStart);
-            UI.WriteColoredLine("1: 🟢 " + UI.T("Create"), ConsoleColor.Green);
-            UI.WriteRgbLine("2: 🎯 " + UI.T("List"), 199, 21, 133);
-            UI.WriteColoredLine("3: 🔎 " + UI.T("GetById"), ConsoleColor.White);
-            UI.WriteColoredLine("4: ✏️ " + UI.T("Update"), ConsoleColor.Yellow);
-            UI.WriteColoredLine("5: 🗑️ " + UI.T("Delete"), ConsoleColor.Red);
-            UI.WriteColoredLine("6: 🔍 " + UI.T("Search"), ConsoleColor.Blue);
-            UI.WriteLine("0: ◀️ " + UI.T("Back"));
         }
         #endregion
 
-        #region MemberMenu (same pattern)
+        #region MemberMenu
         static void MemberMenu()
         {
             UI.ClearAndRenderHeader();
@@ -522,32 +460,20 @@ namespace ConsoleUI
             int areaStart = Console.CursorTop;
             while (true)
             {
+                Console.SetCursorPosition(0, areaStart);
+                UI.ClearFromLine(areaStart);
                 UI.Write(UI.T("Choice") + " ");
                 var c = Console.ReadLine();
-                if (c == "0") { UI.ClearFromLine(areaStart); return; }
+                if (c == "0") return;
                 switch (c)
                 {
-                    case "1":
-                        CreateMemberFlow(areaStart);
-                        break;
-                    case "2":
-                        ListMembersFlow(areaStart);
-                        break;
-                    case "3":
-                        GetMemberByIdFlow(areaStart);
-                        break;
-                    case "4":
-                        UpdateMemberFlow(areaStart);
-                        break;
-                    case "5":
-                        DeleteMemberFlow(areaStart);
-                        break;
-                    case "6":
-                        SearchMembersFlow(areaStart);
-                        break;
-                    default:
-                        UI.DisplayTransientMessage("❌ " + UI.T("InvalidChoice"), 900, areaStart);
-                        break;
+                    case "1": CreateMemberFlow(areaStart); break;
+                    case "2": ListMembersFlow(areaStart); break;
+                    case "3": GetMemberByIdFlow(areaStart); break;
+                    case "4": UpdateMemberFlow(areaStart); break;
+                    case "5": DeleteMemberFlow(areaStart); break;
+                    case "6": SearchMembersFlow(areaStart); break;
+                    default: UI.DisplayTransientMessage("❌ " + UI.T("InvalidChoice"), 900, areaStart); break;
                 }
             }
         }
@@ -562,17 +488,13 @@ namespace ConsoleUI
                 UI.Write("📱 " + UI.T("PhoneNumber") + ": "); var phone = Console.ReadLine();
                 var m = new Member { FullName = name, Email = email, PhoneNumber = phone, MembershipDate = DateTime.Now, IsActive = true };
                 memberService.Create(m);
-                UI.DisplayTransientMessage("✅ " + UI.T("MemberCreated"), 1000, start);
+                UI.DisplayTransientMessage("✅ Member added successfully!", 1500, areaStart);
             }
-            catch (Exception ex) { UI.DisplayTransientMessage("❗ " + UI.T("Error") + ": " + ex.Message, 1400, start); }
-            UI.ClearFromLine(areaStart);
-            UI.WriteColoredLine("1: 🟢 " + UI.T("Create"), ConsoleColor.Green);
-            UI.WriteRgbLine("2: 🎯 " + UI.T("List"), 0, 200, 200);
-            UI.WriteColoredLine("3: 🔎 " + UI.T("GetById"), ConsoleColor.White);
-            UI.WriteColoredLine("4: ✏️ " + UI.T("Update"), ConsoleColor.Yellow);
-            UI.WriteColoredLine("5: 🗑️ " + UI.T("Delete"), ConsoleColor.Red);
-            UI.WriteColoredLine("6: 🔍 " + UI.T("Search"), ConsoleColor.Blue);
-            UI.WriteLine("0: ◀️ " + UI.T("Back"));
+            catch (Exception ex)
+            {
+                UI.DisplayTransientMessage("❗ " + UI.T("Error") + ": " + ex.Message, 1400, start);
+                UI.ClearFromLine(areaStart);
+            }
         }
 
         static void ListMembersFlow(int areaStart)
@@ -580,62 +502,54 @@ namespace ConsoleUI
             int start = Console.CursorTop;
             UI.SpinnerAnsi("🔎 " + UI.T("Loading"), 500, 0, 200, 200);
             var list = memberService.GetAll();
-            if (!list.Any()) UI.DisplayTransientMessage("ℹ️ " + UI.T("NoMembers"), 900, start);
+            if (!list.Any())
+            {
+                UI.DisplayTransientMessage("ℹ️ " + UI.T("NoMembers"), 900, start);
+                UI.ClearFromLine(areaStart);
+            }
             else
             {
+                string format = "{0,-5} {1,-25} {2,-30} {3,-15} {4,-10}";
+                UI.WriteColoredLine(string.Format(format, UI.T("ColMemId"), UI.T("ColMemName"), UI.T("ColMemEmail"), UI.T("ColMemPhone"), UI.T("ColMemStatus")), ConsoleColor.Cyan);
+                UI.WriteLine(new string('-', 90));
+
                 int idx = 0;
                 foreach (var m in list)
                 {
-                    var color = (idx % 2 == 0) ? ConsoleColor.Cyan : ConsoleColor.DarkCyan;
-                    UI.WriteColoredLine($"{m.Id}: {m.FullName} | {m.Email} | {m.PhoneNumber} | {m.MembershipDate:yyyy-MM-dd} | Active:{m.IsActive}", color);
+                    var color = (idx % 2 == 0) ? ConsoleColor.Gray : ConsoleColor.DarkGray;
+                    UI.WriteColoredLine(string.Format(format, m.Id, m.FullName, m.Email, m.PhoneNumber, m.IsActive ? "+" : "-"), color);
                     idx++;
                 }
                 UI.WaitForEnterAndClearFrom(areaStart, UI.T("PressEnterToContinue"));
             }
-            UI.ClearFromLine(areaStart);
-            UI.WriteColoredLine("1: 🟢 " + UI.T("Create"), ConsoleColor.Green);
-            UI.WriteRgbLine("2: 🎯 " + UI.T("List"), 0, 200, 200);
-            UI.WriteColoredLine("3: 🔎 " + UI.T("GetById"), ConsoleColor.White);
-            UI.WriteColoredLine("4: ✏️ " + UI.T("Update"), ConsoleColor.Yellow);
-            UI.WriteColoredLine("5: 🗑️ " + UI.T("Delete"), ConsoleColor.Red);
-            UI.WriteColoredLine("6: 🔍 " + UI.T("Search"), ConsoleColor.Blue);
-            UI.WriteLine("0: ◀️ " + UI.T("Back"));
         }
 
         static void GetMemberByIdFlow(int areaStart)
         {
             int start = Console.CursorTop;
             UI.Write("🔢 " + UI.T("Id") + ": "); var idS = Console.ReadLine();
-            if (!int.TryParse(idS, out int id)) UI.DisplayTransientMessage("❌ " + UI.T("InvalidId"), 900, start);
+            if (!int.TryParse(idS, out int id)) { UI.DisplayTransientMessage("❌ " + UI.T("InvalidId"), 900, start); UI.ClearFromLine(areaStart); }
             else
             {
                 var m = memberService.Get(id);
-                if (m == null) UI.DisplayTransientMessage("ℹ️ " + UI.T("NotFound"), 900, start);
+                if (m == null) { UI.DisplayTransientMessage("ℹ️ " + UI.T("NotFound"), 900, start); UI.ClearFromLine(areaStart); }
                 else
                 {
                     UI.WriteColoredLine($"{m.Id}: {m.FullName} | {m.Email} | {m.PhoneNumber} | {m.MembershipDate:yyyy-MM-dd} | Active:{m.IsActive}", ConsoleColor.Cyan);
                     UI.WaitForEnterAndClearFrom(areaStart, UI.T("PressEnterToContinue"));
                 }
             }
-            UI.ClearFromLine(areaStart);
-            UI.WriteColoredLine("1: 🟢 " + UI.T("Create"), ConsoleColor.Green);
-            UI.WriteRgbLine("2: 🎯 " + UI.T("List"), 0, 200, 200);
-            UI.WriteColoredLine("3: 🔎 " + UI.T("GetById"), ConsoleColor.White);
-            UI.WriteColoredLine("4: ✏️ " + UI.T("Update"), ConsoleColor.Yellow);
-            UI.WriteColoredLine("5: 🗑️ " + UI.T("Delete"), ConsoleColor.Red);
-            UI.WriteColoredLine("6: 🔍 " + UI.T("Search"), ConsoleColor.Blue);
-            UI.WriteLine("0: ◀️ " + UI.T("Back"));
         }
 
         static void UpdateMemberFlow(int areaStart)
         {
             int start = Console.CursorTop;
             UI.Write("🔢 " + UI.T("Id") + ": "); var idS = Console.ReadLine();
-            if (!int.TryParse(idS, out int id)) UI.DisplayTransientMessage("❌ " + UI.T("InvalidId"), 900, start);
+            if (!int.TryParse(idS, out int id)) { UI.DisplayTransientMessage("❌ " + UI.T("InvalidId"), 900, start); UI.ClearFromLine(areaStart); }
             else
             {
                 var existing = memberService.Get(id);
-                if (existing == null) UI.DisplayTransientMessage("ℹ️ " + UI.T("NotFound"), 900, start);
+                if (existing == null) { UI.DisplayTransientMessage("ℹ️ " + UI.T("NotFound"), 900, start); UI.ClearFromLine(areaStart); }
                 else
                 {
                     UI.Write($"🧾 {UI.T("FullName")} ({existing.FullName}): "); var name = Console.ReadLine();
@@ -650,37 +564,17 @@ namespace ConsoleUI
                     else if (!string.IsNullOrWhiteSpace(activeS) && (activeS == "0" || activeS.ToLower() == "false")) existing.IsActive = false;
 
                     memberService.Update(existing);
-                    UI.DisplayTransientMessage("✅ " + UI.T("Updated"), 1000, start);
+                    UI.DisplayTransientMessage("✅ Member updated successfully!", 1500, areaStart);
                 }
             }
-            UI.ClearFromLine(areaStart);
-            UI.WriteColoredLine("1: 🟢 " + UI.T("Create"), ConsoleColor.Green);
-            UI.WriteRgbLine("2: 🎯 " + UI.T("List"), 0, 200, 200);
-            UI.WriteColoredLine("3: 🔎 " + UI.T("GetById"), ConsoleColor.White);
-            UI.WriteColoredLine("4: ✏️ " + UI.T("Update"), ConsoleColor.Yellow);
-            UI.WriteColoredLine("5: 🗑️ " + UI.T("Delete"), ConsoleColor.Red);
-            UI.WriteColoredLine("6: 🔍 " + UI.T("Search"), ConsoleColor.Blue);
-            UI.WriteLine("0: ◀️ " + UI.T("Back"));
         }
 
         static void DeleteMemberFlow(int areaStart)
         {
             int start = Console.CursorTop;
             UI.Write("🔢 " + UI.T("Id") + ": "); var idS = Console.ReadLine();
-            if (!int.TryParse(idS, out int id)) UI.DisplayTransientMessage("❌ " + UI.T("InvalidId"), 900, start);
-            else
-            {
-                memberService.Delete(id);
-                UI.DisplayTransientMessage("🗑️ " + UI.T("Deleted"), 1000, start);
-            }
-            UI.ClearFromLine(areaStart);
-            UI.WriteColoredLine("1: 🟢 " + UI.T("Create"), ConsoleColor.Green);
-            UI.WriteRgbLine("2: 🎯 " + UI.T("List"), 0, 200, 200);
-            UI.WriteColoredLine("3: 🔎 " + UI.T("GetById"), ConsoleColor.White);
-            UI.WriteColoredLine("4: ✏️ " + UI.T("Update"), ConsoleColor.Yellow);
-            UI.WriteColoredLine("5: 🗑️ " + UI.T("Delete"), ConsoleColor.Red);
-            UI.WriteColoredLine("6: 🔍 " + UI.T("Search"), ConsoleColor.Blue);
-            UI.WriteLine("0: ◀️ " + UI.T("Back"));
+            if (!int.TryParse(idS, out int id)) { UI.DisplayTransientMessage("❌ " + UI.T("InvalidId"), 900, start); UI.ClearFromLine(areaStart); }
+            else { memberService.Delete(id); UI.DisplayTransientMessage("🗑️ Member deleted successfully!", 1500, areaStart); }
         }
 
         static void SearchMembersFlow(int areaStart)
@@ -688,31 +582,32 @@ namespace ConsoleUI
             int start = Console.CursorTop;
             UI.Write("🔎 " + UI.T("Keyword") + " (" + UI.T("NameOrEmail") + "): "); var kw = Console.ReadLine();
             var res = memberService.Search(kw);
-            if (!res.Any()) UI.DisplayTransientMessage("ℹ️ " + UI.T("NoResults"), 900, start);
+            if (!res.Any())
+            {
+                UI.DisplayTransientMessage("ℹ️ " + UI.T("NoResults"), 900, start);
+                UI.ClearFromLine(areaStart);
+            }
             else
             {
-                foreach (var m in res) UI.WriteColoredLine($"{m.Id}: {m.FullName} | {m.Email}", ConsoleColor.Cyan);
+                string format = "{0,-5} {1,-25} {2,-30} {3,-15} {4,-10}";
+                UI.WriteColoredLine(string.Format(format, UI.T("ColMemId"), UI.T("ColMemName"), UI.T("ColMemEmail"), UI.T("ColMemPhone"), UI.T("ColMemStatus")), ConsoleColor.Cyan);
+                UI.WriteLine(new string('-', 90));
+                foreach (var m in res)
+                {
+                    UI.WriteColoredLine(string.Format(format, m.Id, m.FullName, m.Email, m.PhoneNumber, m.IsActive ? "+" : "-"), ConsoleColor.DarkCyan);
+                }
                 UI.WaitForEnterAndClearFrom(areaStart, UI.T("PressEnterToContinue"));
             }
-            UI.ClearFromLine(areaStart);
-            UI.WriteColoredLine("1: 🟢 " + UI.T("Create"), ConsoleColor.Green);
-            UI.WriteRgbLine("2: 🎯 " + UI.T("List"), 0, 200, 200);
-            UI.WriteColoredLine("3: 🔎 " + UI.T("GetById"), ConsoleColor.White);
-            UI.WriteColoredLine("4: ✏️ " + UI.T("Update"), ConsoleColor.Yellow);
-            UI.WriteColoredLine("5: 🗑️ " + UI.T("Delete"), ConsoleColor.Red);
-            UI.WriteColoredLine("6: 🔍 " + UI.T("Search"), ConsoleColor.Blue);
-            UI.WriteLine("0: ◀️ " + UI.T("Back"));
         }
         #endregion
     }
 
-    // LocalSettings (sizin əvvəlki implementation u qalır)
     public class LocalSettings
     {
         private static readonly string ConfigPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "library_settings.json");
         public static LocalSettings Instance { get; private set; } = new LocalSettings();
 
-        public string Language { get; set; } = "az"; // default az
+        public string Language { get; set; } = "az";
 
         public static void Load()
         {
@@ -728,7 +623,6 @@ namespace ConsoleUI
                     Instance = new LocalSettings();
                     Instance.Save();
                 }
-                // Apply saved language to UI/Localization
                 UI.SetLanguage(Instance.Language);
                 Localization.SetLanguage(Instance.Language);
             }
@@ -750,17 +644,14 @@ namespace ConsoleUI
             }
             catch
             {
-                // ignore
             }
             UI.SetLanguage(this.Language);
             Localization.SetLanguage(this.Language);
         }
     }
 
-    // UI Helpers (delegates translations to Localization). Yeni: ClearFromLine, ClearLastLines, DisplayTransientMessage, WaitForEnterAndClearFrom.
     public static class UI
     {
-        // Try to enable ANSI VT mode on Windows so truecolor sequences work
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern IntPtr GetStdHandle(int nStdHandle);
         [DllImport("kernel32.dll")]
@@ -783,11 +674,9 @@ namespace ConsoleUI
             }
             catch
             {
-                // ignore - not critical
             }
         }
 
-        // Delegation to Localization for translations
         public static void SetLanguage(string language)
         {
             Localization.SetLanguage(language);
@@ -798,7 +687,6 @@ namespace ConsoleUI
             return Localization.T(key);
         }
 
-        // Clear helpers
         public static void Clear()
         {
             Console.Clear();
@@ -810,7 +698,6 @@ namespace ConsoleUI
             WriteHeader(T("LibraryTitle"));
         }
 
-        // Clears console content starting from 'top' line to the bottom of visible window.
         public static void ClearFromLine(int top)
         {
             try
@@ -826,13 +713,11 @@ namespace ConsoleUI
             }
             catch
             {
-                // fallback
                 Console.Clear();
                 WriteHeader(T("LibraryTitle"));
             }
         }
 
-        // Clear last N printed lines (from current cursor position upwards)
         public static void ClearLastLines(int count)
         {
             if (count <= 0) return;
@@ -855,8 +740,6 @@ namespace ConsoleUI
             }
         }
 
-        // Display a transient message (e.g. "Added") for durationMs then remove it.
-        // If areaStart provided, we'll leave content above areaStart intact and clear everything under it after timeout.
         public static void DisplayTransientMessage(string text, int durationMs = 900, int areaStart = -1)
         {
             Console.WriteLine(text);
@@ -866,8 +749,6 @@ namespace ConsoleUI
             else
                 ClearLastLines(1);
         }
-
-        // Wait for Enter key and then clear content starting from areaStart.
 
         public static void WaitForEnterAndClearFrom(int areaStart, string prompt = null)
         {
@@ -892,10 +773,9 @@ namespace ConsoleUI
                 string content = " " + text + " ";
                 if (width < 10 || content.Length >= width - 2)
                 {
-                    // fallback: sadə üçsətrli başlıq
                     Console.ForegroundColor = ConsoleColor.Cyan;
                     Console.WriteLine(new string('=', Math.Max(0, width - 1)));
-                    Console.ForegroundColor = ConsoleColor.Yellow; // başlıq mətni sarı
+                    Console.ForegroundColor = ConsoleColor.Yellow;
                     Console.WriteLine(text);
                     Console.ForegroundColor = ConsoleColor.Cyan;
                     Console.WriteLine(new string('=', Math.Max(0, width - 1)));
@@ -907,7 +787,6 @@ namespace ConsoleUI
                 int leftEquals = availableForEquals / 2;
                 int rightEquals = availableForEquals - leftEquals;
 
-                // Top border: sol (Cyan), orta (Red), sağ (Green)
                 if (leftEquals > 0)
                 {
                     Console.ForegroundColor = ConsoleColor.Cyan;
@@ -923,14 +802,13 @@ namespace ConsoleUI
                 Console.WriteLine();
                 Console.ResetColor();
 
-                // Middle line: sol '=', mərkəzdə SARİ başlıq, sağ '='
                 if (leftEquals > 0)
                 {
                     Console.ForegroundColor = ConsoleColor.Cyan;
                     Console.Write(new string('=', leftEquals));
                 }
 
-                Console.ForegroundColor = ConsoleColor.Yellow; // <-- başlıq mətni SARİ
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.Write(content);
 
                 if (rightEquals > 0)
@@ -941,7 +819,6 @@ namespace ConsoleUI
                 Console.WriteLine();
                 Console.ResetColor();
 
-                // Bottom border: eyni sxem
                 if (leftEquals > 0)
                 {
                     Console.ForegroundColor = ConsoleColor.Cyan;
@@ -959,7 +836,6 @@ namespace ConsoleUI
             }
             catch
             {
-                // fallback sadə
                 Console.WriteLine("=================================================");
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine(text);
@@ -1021,7 +897,6 @@ namespace ConsoleUI
             Console.ResetColor();
         }
 
-        // Write truecolor (RGB) text using ANSI escape sequences.
         public static void WriteRgbLine(string text, int r, int g, int b)
         {
             string seq = $"\u001b[38;2;{r};{g};{b}m{text}\u001b[0m";
@@ -1034,7 +909,6 @@ namespace ConsoleUI
             Console.Write(seq);
         }
 
-        // Spinner using ConsoleColor
         public static void Spinner(string message, int durationMs = 800)
         {
             var spinner = new[] { '|', '/', '-', '\\' };
@@ -1050,7 +924,6 @@ namespace ConsoleUI
             Console.WriteLine();
         }
 
-        // Spinner using ANSI RGB color for spinner/label
         public static void SpinnerAnsi(string message, int durationMs = 800, int r = 255, int g = 255, int b = 255)
         {
             var spinner = new[] { '|', '/', '-', '\\' };
