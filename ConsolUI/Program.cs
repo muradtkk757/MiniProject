@@ -1,25 +1,28 @@
 ﻿using BusinessLogicLayer.Services;
 using BusinessLogicLayer.Services.Contracts;
+using DataAccessLayer.Data;
 using DataAccessLayer.Repostories;
 using DataAccessLayerModels;
 using System;
-using System.IO;
-using System.Text;
-using DataAccessLayer.Data;
-using System.Text.Json;
-using System.Threading;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
+using System.Text.Json;
+using System.Threading;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ConsoleUI
 {
     class Program
     {
+        
         static BookRepository bookRepo = new BookRepository();
         static CategoryRepository categoryRepo = new CategoryRepository();
         static MemberRepository memberRepo = new MemberRepository();
 
+        
         static IBookService bookService = new BookService(bookRepo, categoryRepo);
         static ICategoryService categoryService = new CategoryService(categoryRepo);
         static IMemberService memberService = new MemberService(memberRepo);
@@ -30,7 +33,9 @@ namespace ConsoleUI
             Console.InputEncoding = Encoding.UTF8;
 
             UI.EnableVirtualTerminalProcessing();
-            DataContext.EnsureDataFiles();
+
+            
+            Data.EnsureDataFiles();
 
             LocalSettings.Load();
 
@@ -72,6 +77,7 @@ namespace ConsoleUI
             Thread.Sleep(300);
         }
 
+        
         static string GenerateUniqueIsbn()
         {
             Random random = new Random();
@@ -79,9 +85,14 @@ namespace ConsoleUI
             bool exists;
             do
             {
-                StringBuilder sb = new StringBuilder();
-                for (int i = 0; i < 13; i++) sb.Append(random.Next(0, 10));
-                newIsbn = sb.ToString();
+                
+                int part1 = random.Next(100, 1000); 
+                int part2 = random.Next(100, 1000);
+                int part3 = random.Next(100, 1000);
+
+                newIsbn = $"9-{part1}-{part2}-{part3}";
+
+                
                 exists = bookService.GetAll().Any(b => b.ISBN == newIsbn);
             } while (exists);
             return newIsbn;
@@ -128,14 +139,20 @@ namespace ConsoleUI
             {
                 UI.Write("🖊️ " + UI.T("Title") + ": "); var title = Console.ReadLine();
                 UI.Write("✍️ " + UI.T("Author") + ": "); var author = Console.ReadLine();
+
+                
                 string isbn = GenerateUniqueIsbn();
                 UI.WriteColoredLine("🔢 " + UI.T("ISBN") + " (Auto): " + isbn, ConsoleColor.Cyan);
+
                 UI.Write("📅 " + UI.T("PublishedYear") + ": "); var yearS = Console.ReadLine();
                 UI.Write("🗂️ " + UI.T("CategoryId") + ": "); var catS = Console.ReadLine();
+
                 int year = int.TryParse(yearS, out var y) ? y : 0;
                 int catId = int.TryParse(catS, out var cc) ? cc : 0;
+
                 var book = new Book { Title = title, Author = author, ISBN = isbn, PublishedYear = year, CategoryId = catId, IsAvailable = true };
                 bookService.Create(book);
+
                 UI.DisplayTransientMessage("✅ Book added successfully!", 1500, areaStart);
             }
             catch (Exception ex)
@@ -158,7 +175,8 @@ namespace ConsoleUI
             }
             else
             {
-                string format = "{0,-4} {1,-25} {2,-20} {3,-15} {4,-6} {5,-15} {6,-10}";
+                // Slightly adjusted formatting to accommodate longer ISBN if needed
+                string format = "{0,-4} {1,-25} {2,-20} {3,-16} {4,-6} {5,-15} {6,-10}";
                 UI.WriteColoredLine(string.Format(format, "ID", UI.T("ColTitle"), UI.T("ColAuthor"), "ISBN", UI.T("ColYear"), UI.T("ColCat"), UI.T("ColStatus")), ConsoleColor.Yellow);
                 UI.WriteLine(new string('-', 105));
 
@@ -486,8 +504,29 @@ namespace ConsoleUI
                 UI.Write("🧾 " + UI.T("FullName") + ": "); var name = Console.ReadLine();
                 UI.Write("📧 " + UI.T("Email") + ": "); var email = Console.ReadLine();
                 UI.Write("📱 " + UI.T("PhoneNumber") + ": "); var phone = Console.ReadLine();
-                var m = new Member { FullName = name, Email = email, PhoneNumber = phone, MembershipDate = DateTime.Now, IsActive = true };
-                memberService.Create(m);
+
+                // 3) Unique Check for Name or Email
+                if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(email))
+                {
+                    UI.DisplayTransientMessage("❌ Name and Email are required.", 1400, start);
+                    UI.ClearFromLine(areaStart);
+                    return;
+                }
+
+                var existingMembers = memberService.GetAll();
+                bool duplicateExists = existingMembers.Any(m =>
+                    m.Email.ToLower() == email.ToLower().Trim() ||
+                    m.FullName.ToLower() == name.ToLower().Trim());
+
+                if (duplicateExists)
+                {
+                    UI.DisplayTransientMessage("❌ A member with this Name or Email already exists!", 2000, start);
+                    UI.ClearFromLine(areaStart);
+                    return;
+                }
+
+                var mem = new Member { FullName = name, Email = email, PhoneNumber = phone, MembershipDate = DateTime.Now, IsActive = true };
+                memberService.Create(mem);
                 UI.DisplayTransientMessage("✅ Member added successfully!", 1500, areaStart);
             }
             catch (Exception ex)
@@ -557,8 +596,28 @@ namespace ConsoleUI
                     UI.Write($"📱 {UI.T("PhoneNumber")} ({existing.PhoneNumber}): "); var phone = Console.ReadLine();
                     UI.Write($"✅ {UI.T("IsActive")} ({existing.IsActive}): "); var activeS = Console.ReadLine();
 
-                    existing.FullName = string.IsNullOrWhiteSpace(name) ? existing.FullName : name;
-                    existing.Email = string.IsNullOrWhiteSpace(email) ? existing.Email : email;
+                    // Check uniqueness if email or name is changing
+                    if (!string.IsNullOrWhiteSpace(name) && name != existing.FullName)
+                    {
+                        if (memberService.GetAll().Any(x => x.FullName.ToLower() == name.ToLower()))
+                        {
+                            UI.DisplayTransientMessage("❌ Name exists already!", 1500, start);
+                            UI.ClearFromLine(areaStart);
+                            return;
+                        }
+                        existing.FullName = name;
+                    }
+                    if (!string.IsNullOrWhiteSpace(email) && email != existing.Email)
+                    {
+                        if (memberService.GetAll().Any(x => x.Email.ToLower() == email.ToLower()))
+                        {
+                            UI.DisplayTransientMessage("❌ Email exists already!", 1500, start);
+                            UI.ClearFromLine(areaStart);
+                            return;
+                        }
+                        existing.Email = email;
+                    }
+
                     existing.PhoneNumber = string.IsNullOrWhiteSpace(phone) ? existing.PhoneNumber : phone;
                     if (!string.IsNullOrWhiteSpace(activeS) && (activeS == "1" || activeS.ToLower() == "true")) existing.IsActive = true;
                     else if (!string.IsNullOrWhiteSpace(activeS) && (activeS == "0" || activeS.ToLower() == "false")) existing.IsActive = false;

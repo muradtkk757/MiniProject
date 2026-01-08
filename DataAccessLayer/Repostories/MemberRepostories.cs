@@ -11,18 +11,18 @@ namespace DataAccessLayer.Repostories
 {
     public class MemberRepository : IRepository<Member>
     {
-        private readonly string _file = DataContext.MembersFile;
+        private readonly string _file = Data.Data.MembersFile;
 
         private const int ID_LENGTH = 5;
         private const int FULLNAME_LENGTH = 30;
         private const int EMAIL_LENGTH = 40;
         private const int PHONE_LENGTH = 15;
-        private const int DATE_LENGTH = 8; // yyyyMMdd
+        private const int DATE_LENGTH = 8;
         private const int ISACTIVE_LENGTH = 1;
 
         public MemberRepository()
         {
-            DataContext.EnsureDataFiles();
+            Data.Data.EnsureDataFiles();
         }
 
         public void Add(Member entity)

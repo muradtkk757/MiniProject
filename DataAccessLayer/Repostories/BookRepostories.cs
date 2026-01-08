@@ -12,7 +12,7 @@ namespace DataAccessLayer.Repostories
 
     public class BookRepository : IRepository<Book>
     {
-        private readonly string _file = DataContext.BooksFile;
+        private readonly string _file = Data.Data.BooksFile;
 
         private const int ID_LENGTH = 5;
         private const int TITLE_LENGTH = 30;
@@ -24,7 +24,7 @@ namespace DataAccessLayer.Repostories
 
         public BookRepository()
         {
-            DataContext.EnsureDataFiles();
+            Data.Data.EnsureDataFiles();
         }
 
         public void Add(Book entity)
@@ -103,14 +103,7 @@ namespace DataAccessLayer.Repostories
 
         private Book ParseLine(string line)
         {
-            // Using exact indices and lengths
-            // 0-5 Id
-            // 5-35 Title
-            // 35-60 Author
-            // 60-73 ISBN
-            // 73-77 Year
-            // 77-82 CategoryId
-            // 82-83 IsAvailable
+         
             try
             {
                 int index = 0;
@@ -120,7 +113,7 @@ namespace DataAccessLayer.Repostories
                 string isbn = line.Substring(index, ISBN_LENGTH); index += ISBN_LENGTH;
                 string yearS = line.Substring(index, YEAR_LENGTH); index += YEAR_LENGTH;
                 string catS = line.Substring(index, CATEGORYID_LENGTH); index += CATEGORYID_LENGTH;
-                string availS = line.Substring(index, ISAVAILABLE_LENGTH); // index += ISAVAILABLE_LENGTH;
+                string availS = line.Substring(index, ISAVAILABLE_LENGTH); 
 
                 return new Book
                 {
@@ -141,9 +134,7 @@ namespace DataAccessLayer.Repostories
 
         private string BuildLine(Book b)
         {
-            // Id padded left with zeros to length 5
-            // Strings padded right
-            // IsAvailable as '1' or '0'
+        
             string id = b.Id.ToString().PadLeft(ID_LENGTH, '0');
             string title = (b.Title ?? string.Empty).PadRight(TITLE_LENGTH).Substring(0, TITLE_LENGTH);
             string author = (b.Author ?? string.Empty).PadRight(AUTHOR_LENGTH).Substring(0, AUTHOR_LENGTH);

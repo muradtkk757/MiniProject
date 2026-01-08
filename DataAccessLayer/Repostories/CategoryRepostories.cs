@@ -11,7 +11,7 @@ namespace DataAccessLayer.Repostories
 {
     public class CategoryRepository : IRepository<Category>
     {
-        private readonly string _file = DataContext.CategoriesFile;
+        private readonly string _file = Data.Data.CategoriesFile;
 
         private const int ID_LENGTH = 5;
         private const int NAME_LENGTH = 30;
@@ -19,7 +19,7 @@ namespace DataAccessLayer.Repostories
 
         public CategoryRepository()
         {
-            DataContext.EnsureDataFiles();
+            Data.Data.EnsureDataFiles();
         }
 
         public void Add(Category entity)
