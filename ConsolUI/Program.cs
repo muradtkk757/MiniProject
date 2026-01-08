@@ -140,7 +140,7 @@ namespace ConsoleUI
                 UI.WriteColoredLine("🔢 " + UI.T("ISBN") + " (Auto): " + isbn, ConsoleColor.Cyan);
 
                 int currentYear = DateTime.Now.Year;
-                UI.Write($"📅 {UI.T("PublishedYear")} ({currentYear}): ");
+                UI.Write($"📅 {UI.T("PublishedYear")} ({UI.T("Default")} {currentYear}): ");
                 var yearS = Console.ReadLine();
                 int year = string.IsNullOrWhiteSpace(yearS) ? currentYear : (int.TryParse(yearS, out var y) ? y : currentYear);
 
@@ -153,28 +153,28 @@ namespace ConsoleUI
                 }
                 UI.WriteLine(new string('-', 30));
 
-                UI.WriteColoredLine("1: Select Existing Category", ConsoleColor.Cyan);
-                UI.WriteColoredLine("2: Create New Category", ConsoleColor.Green);
-                UI.Write("Choice: ");
+                UI.WriteColoredLine("1: " + UI.T("SelectExistingCategory"), ConsoleColor.Cyan);
+                UI.WriteColoredLine("2: " + UI.T("CreateNewCategory"), ConsoleColor.Green);
+                UI.Write(UI.T("Choice") + " ");
                 var catChoice = Console.ReadLine();
 
                 int selectedCategoryId = 0;
 
                 if (catChoice == "2")
                 {
-                    UI.Write("🆕 New Category Name: ");
+                    UI.Write("🆕 " + UI.T("NewCategoryName") + ": ");
                     var newCatName = Console.ReadLine();
-                    UI.Write("📝 Description: ");
+                    UI.Write("📝 " + UI.T("Description") + ": ");
                     var newCatDesc = Console.ReadLine();
 
                     var newCategory = new Category { Name = newCatName, Description = newCatDesc };
                     categoryService.Create(newCategory);
                     selectedCategoryId = newCategory.Id;
-                    UI.WriteSuccess("✅ New category created and selected.");
+                    UI.WriteSuccess("✅ " + UI.T("NewCategoryCreatedSelected"));
                 }
                 else
                 {
-                    UI.Write("🗂️ Enter Category ID: ");
+                    UI.Write("🗂️ " + UI.T("EnterCategoryId") + ": ");
                     var catIdInput = Console.ReadLine();
                     int.TryParse(catIdInput, out selectedCategoryId);
                 }
@@ -190,8 +190,7 @@ namespace ConsoleUI
                 };
 
                 bookService.Create(book);
-
-                UI.DisplayTransientMessage("✅ Book added successfully!", 1500, areaStart);
+                UI.DisplayTransientMessage("✅ " + UI.T("BookCreated"), 1500, areaStart);
             }
             catch (Exception ex)
             {
@@ -199,7 +198,6 @@ namespace ConsoleUI
                 UI.ClearFromLine(areaStart);
             }
         }
-
         static void ListBooksFlow(int areaStart)
         {
             int start = Console.CursorTop;
