@@ -11,18 +11,15 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ConsoleUI
 {
     class Program
     {
-        
         static BookRepository bookRepo = new BookRepository();
         static CategoryRepository categoryRepo = new CategoryRepository();
         static MemberRepository memberRepo = new MemberRepository();
 
-        
         static IBookService bookService = new BookService(bookRepo, categoryRepo);
         static ICategoryService categoryService = new CategoryService(categoryRepo);
         static IMemberService memberService = new MemberService(memberRepo);
@@ -34,7 +31,6 @@ namespace ConsoleUI
 
             UI.EnableVirtualTerminalProcessing();
 
-            
             Data.EnsureDataFiles();
 
             LocalSettings.Load();
@@ -77,7 +73,6 @@ namespace ConsoleUI
             Thread.Sleep(300);
         }
 
-        
         static string GenerateUniqueIsbn()
         {
             Random random = new Random();
@@ -85,14 +80,12 @@ namespace ConsoleUI
             bool exists;
             do
             {
-                
-                int part1 = random.Next(100, 1000); 
+                int part1 = random.Next(100, 1000);
                 int part2 = random.Next(100, 1000);
                 int part3 = random.Next(100, 1000);
 
                 newIsbn = $"9-{part1}-{part2}-{part3}";
 
-                
                 exists = bookService.GetAll().Any(b => b.ISBN == newIsbn);
             } while (exists);
             return newIsbn;
@@ -137,20 +130,65 @@ namespace ConsoleUI
             int start = Console.CursorTop;
             try
             {
-                UI.Write("🖊️ " + UI.T("Title") + ": "); var title = Console.ReadLine();
-                UI.Write("✍️ " + UI.T("Author") + ": "); var author = Console.ReadLine();
+                UI.Write("🖊️ " + UI.T("Title") + ": ");
+                var title = Console.ReadLine();
 
-                
+                UI.Write("✍️ " + UI.T("Author") + ": ");
+                var author = Console.ReadLine();
+
                 string isbn = GenerateUniqueIsbn();
                 UI.WriteColoredLine("🔢 " + UI.T("ISBN") + " (Auto): " + isbn, ConsoleColor.Cyan);
 
-                UI.Write("📅 " + UI.T("PublishedYear") + ": "); var yearS = Console.ReadLine();
-                UI.Write("🗂️ " + UI.T("CategoryId") + ": "); var catS = Console.ReadLine();
+                int currentYear = DateTime.Now.Year;
+                UI.Write($"📅 {UI.T("PublishedYear")} ({currentYear}): ");
+                var yearS = Console.ReadLine();
+                int year = string.IsNullOrWhiteSpace(yearS) ? currentYear : (int.TryParse(yearS, out var y) ? y : currentYear);
 
-                int year = int.TryParse(yearS, out var y) ? y : 0;
-                int catId = int.TryParse(catS, out var cc) ? cc : 0;
+                UI.WriteLine("");
+                UI.WriteColoredLine("--- " + UI.T("ManageCategories") + " ---", ConsoleColor.Magenta);
+                var categories = categoryService.GetAll();
+                foreach (var cat in categories)
+                {
+                    UI.WriteLine($"{cat.Id}: {cat.Name}");
+                }
+                UI.WriteLine(new string('-', 30));
 
-                var book = new Book { Title = title, Author = author, ISBN = isbn, PublishedYear = year, CategoryId = catId, IsAvailable = true };
+                UI.WriteColoredLine("1: Select Existing Category", ConsoleColor.Cyan);
+                UI.WriteColoredLine("2: Create New Category", ConsoleColor.Green);
+                UI.Write("Choice: ");
+                var catChoice = Console.ReadLine();
+
+                int selectedCategoryId = 0;
+
+                if (catChoice == "2")
+                {
+                    UI.Write("🆕 New Category Name: ");
+                    var newCatName = Console.ReadLine();
+                    UI.Write("📝 Description: ");
+                    var newCatDesc = Console.ReadLine();
+
+                    var newCategory = new Category { Name = newCatName, Description = newCatDesc };
+                    categoryService.Create(newCategory);
+                    selectedCategoryId = newCategory.Id;
+                    UI.WriteSuccess("✅ New category created and selected.");
+                }
+                else
+                {
+                    UI.Write("🗂️ Enter Category ID: ");
+                    var catIdInput = Console.ReadLine();
+                    int.TryParse(catIdInput, out selectedCategoryId);
+                }
+
+                var book = new Book
+                {
+                    Title = title,
+                    Author = author,
+                    ISBN = isbn,
+                    PublishedYear = year,
+                    CategoryId = selectedCategoryId,
+                    IsAvailable = true
+                };
+
                 bookService.Create(book);
 
                 UI.DisplayTransientMessage("✅ Book added successfully!", 1500, areaStart);
@@ -175,7 +213,6 @@ namespace ConsoleUI
             }
             else
             {
-                // Slightly adjusted formatting to accommodate longer ISBN if needed
                 string format = "{0,-4} {1,-25} {2,-20} {3,-16} {4,-6} {5,-15} {6,-10}";
                 UI.WriteColoredLine(string.Format(format, "ID", UI.T("ColTitle"), UI.T("ColAuthor"), "ISBN", UI.T("ColYear"), UI.T("ColCat"), UI.T("ColStatus")), ConsoleColor.Yellow);
                 UI.WriteLine(new string('-', 105));
@@ -505,7 +542,6 @@ namespace ConsoleUI
                 UI.Write("📧 " + UI.T("Email") + ": "); var email = Console.ReadLine();
                 UI.Write("📱 " + UI.T("PhoneNumber") + ": "); var phone = Console.ReadLine();
 
-                // 3) Unique Check for Name or Email
                 if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(email))
                 {
                     UI.DisplayTransientMessage("❌ Name and Email are required.", 1400, start);
@@ -596,7 +632,6 @@ namespace ConsoleUI
                     UI.Write($"📱 {UI.T("PhoneNumber")} ({existing.PhoneNumber}): "); var phone = Console.ReadLine();
                     UI.Write($"✅ {UI.T("IsActive")} ({existing.IsActive}): "); var activeS = Console.ReadLine();
 
-                    // Check uniqueness if email or name is changing
                     if (!string.IsNullOrWhiteSpace(name) && name != existing.FullName)
                     {
                         if (memberService.GetAll().Any(x => x.FullName.ToLower() == name.ToLower()))

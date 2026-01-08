@@ -40,7 +40,6 @@ namespace ConsoleUI
                     ["CategoryId"] = "KateqoriyaId",
                     ["IsAvailable"] = "Mövcuddurmu",
 
-                    // --- KİTAB CƏDVƏLİ ---
                     ["ColTitle"] = "Kitabın adı",
                     ["ColAuthor"] = "Müəllifin adı",
                     ["ColISBN"] = "ISBN",
@@ -48,12 +47,10 @@ namespace ConsoleUI
                     ["ColCat"] = "Kateqoriya",
                     ["ColStatus"] = "Vəziyyəti",
 
-                    // --- KATEQORİYA CƏDVƏLİ ---
                     ["ColCatId"] = "ID",
                     ["ColCatName"] = "Kateqoriya Adı",
                     ["ColCatDesc"] = "Təsvir",
 
-                    // --- MEMBER CƏDVƏLİ ---
                     ["ColMemId"] = "ID",
                     ["ColMemName"] = "Adı Soyadı",
                     ["ColMemEmail"] = "E-poçt",
@@ -85,7 +82,13 @@ namespace ConsoleUI
                     ["PressEnterToContinue"] = "Davam etmək üçün Enter basın...",
                     ["Optional"] = "(istəyə bağlı)",
                     ["NameRequired"] = "Ad daxil edin.",
-                    ["CategoryExists"] = "Bu kateqoriya artıq mövcuddur."
+                    ["CategoryExists"] = "Bu kateqoriya artıq mövcuddur.",
+
+                    ["SelectExistingCategory"] = "Mövcud Kateqoriyanı Seç",
+                    ["CreateNewCategory"] = "Yeni Kateqoriya Yarat",
+                    ["NewCategoryName"] = "Yeni Kateqoriya Adı",
+                    ["NewCategoryCreatedSelected"] = "Yeni kateqoriya yaradıldı və seçildi.",
+                    ["EnterCategoryId"] = "Kateqoriya ID daxil et"
                 },
 
                 ["en"] = new Dictionary<string, string>
@@ -118,7 +121,6 @@ namespace ConsoleUI
                     ["CategoryId"] = "CategoryId",
                     ["IsAvailable"] = "IsAvailable",
 
-                    // Table Headers
                     ["ColTitle"] = "Book Name",
                     ["ColAuthor"] = "Author Name",
                     ["ColISBN"] = "ISBN",
@@ -161,7 +163,13 @@ namespace ConsoleUI
                     ["PressEnterToContinue"] = "Press Enter to continue...",
                     ["Optional"] = "(optional)",
                     ["NameRequired"] = "Name is required.",
-                    ["CategoryExists"] = "A category with this name already exists."
+                    ["CategoryExists"] = "A category with this name already exists.",
+
+                    ["SelectExistingCategory"] = "Select Existing Category",
+                    ["CreateNewCategory"] = "Create New Category",
+                    ["NewCategoryName"] = "New Category Name",
+                    ["NewCategoryCreatedSelected"] = "New category created and selected.",
+                    ["EnterCategoryId"] = "Enter Category ID"
                 },
 
                 ["ru"] = new Dictionary<string, string>
@@ -194,7 +202,6 @@ namespace ConsoleUI
                     ["CategoryId"] = "CategoryId",
                     ["IsAvailable"] = "Доступна ли",
 
-                    // Table Headers
                     ["ColTitle"] = "Название книги",
                     ["ColAuthor"] = "Имя автора",
                     ["ColISBN"] = "ISBN",
@@ -237,7 +244,13 @@ namespace ConsoleUI
                     ["PressEnterToContinue"] = "Нажмите Enter, чтобы продолжить...",
                     ["Optional"] = "(необязательно)",
                     ["NameRequired"] = "Требуется имя.",
-                    ["CategoryExists"] = "Категория с таким именем уже существует."
+                    ["CategoryExists"] = "Категория с таким именем уже существует.",
+
+                    ["SelectExistingCategory"] = "Выбрать существующую категорию",
+                    ["CreateNewCategory"] = "Создать новую категорию",
+                    ["NewCategoryName"] = "Имя новой категории",
+                    ["NewCategoryCreatedSelected"] = "Новая категория создана и выбрана.",
+                    ["EnterCategoryId"] = "Введите ID категории"
                 },
 
                 ["zh"] = new Dictionary<string, string>
@@ -270,7 +283,6 @@ namespace ConsoleUI
                     ["CategoryId"] = "类别Id",
                     ["IsAvailable"] = "可用",
 
-                    // Table Headers
                     ["ColTitle"] = "书名",
                     ["ColAuthor"] = "作者姓名",
                     ["ColISBN"] = "ISBN",
@@ -313,7 +325,13 @@ namespace ConsoleUI
                     ["PressEnterToContinue"] = "按回车继续...",
                     ["Optional"] = "（可选）",
                     ["NameRequired"] = "名称为必填项。",
-                    ["CategoryExists"] = "具有此名称的类别已存在。"
+                    ["CategoryExists"] = "具有此名称的类别已存在。",
+
+                    ["SelectExistingCategory"] = "选择现有类别",
+                    ["CreateNewCategory"] = "创建新类别",
+                    ["NewCategoryName"] = "新类别名称",
+                    ["NewCategoryCreatedSelected"] = "新类别已创建并选中。",
+                    ["EnterCategoryId"] = "输入类别ID"
                 },
 
                 ["fr"] = new Dictionary<string, string>
@@ -346,7 +364,6 @@ namespace ConsoleUI
                     ["CategoryId"] = "CategoryId",
                     ["IsAvailable"] = "Disponible",
 
-                    // Table Headers
                     ["ColTitle"] = "Nom du livre",
                     ["ColAuthor"] = "Nom de l'auteur",
                     ["ColISBN"] = "ISBN",
@@ -389,7 +406,13 @@ namespace ConsoleUI
                     ["PressEnterToContinue"] = "Appuyez sur Entrée pour continuer...",
                     ["Optional"] = "(facultatif)",
                     ["NameRequired"] = "Le nom est requis.",
-                    ["CategoryExists"] = "Une catégorie avec ce nom existe déjà."
+                    ["CategoryExists"] = "Une catégorie avec ce nom existe déjà.",
+
+                    ["SelectExistingCategory"] = "Sélectionner une catégorie existante",
+                    ["CreateNewCategory"] = "Créer une nouvelle catégorie",
+                    ["NewCategoryName"] = "Nom de la nouvelle catégorie",
+                    ["NewCategoryCreatedSelected"] = "Nouvelle catégorie créée et sélectionnée.",
+                    ["EnterCategoryId"] = "Entrez l'ID de catégorie"
                 },
 
                 ["de"] = new Dictionary<string, string>
@@ -422,7 +445,6 @@ namespace ConsoleUI
                     ["CategoryId"] = "CategoryId",
                     ["IsAvailable"] = "Verfügbar",
 
-                    // Table Headers
                     ["ColTitle"] = "Buchtitel",
                     ["ColAuthor"] = "Autorenname",
                     ["ColISBN"] = "ISBN",
@@ -465,7 +487,13 @@ namespace ConsoleUI
                     ["PressEnterToContinue"] = "Drücken Sie die Eingabetaste, um fortzufahren...",
                     ["Optional"] = "(optional)",
                     ["NameRequired"] = "Name ist erforderlich.",
-                    ["CategoryExists"] = "Eine Kategorie mit diesem Namen existiert bereits."
+                    ["CategoryExists"] = "Eine Kategorie mit diesem Namen existiert bereits.",
+
+                    ["SelectExistingCategory"] = "Vorhandene Kategorie auswählen",
+                    ["CreateNewCategory"] = "Neue Kategorie erstellen",
+                    ["NewCategoryName"] = "Neuer Kategoriename",
+                    ["NewCategoryCreatedSelected"] = "Neue Kategorie erstellt und ausgewählt.",
+                    ["EnterCategoryId"] = "Kategorie-ID eingeben"
                 },
 
                 ["it"] = new Dictionary<string, string>
@@ -498,7 +526,6 @@ namespace ConsoleUI
                     ["CategoryId"] = "CategoryId",
                     ["IsAvailable"] = "Disponibile",
 
-                    // Table Headers
                     ["ColTitle"] = "Nome del libro",
                     ["ColAuthor"] = "Nome dell'autore",
                     ["ColISBN"] = "ISBN",
@@ -541,7 +568,13 @@ namespace ConsoleUI
                     ["PressEnterToContinue"] = "Premi Invio per continuare...",
                     ["Optional"] = "(facoltativo)",
                     ["NameRequired"] = "Il nome è obbligatorio.",
-                    ["CategoryExists"] = "Esiste già una categoria con questo nome."
+                    ["CategoryExists"] = "Esiste già una categoria con questo nome.",
+
+                    ["SelectExistingCategory"] = "Seleziona categoria esistente",
+                    ["CreateNewCategory"] = "Crea nuova categoria",
+                    ["NewCategoryName"] = "Nome nuova categoria",
+                    ["NewCategoryCreatedSelected"] = "Nuova categoria creata e selezionata.",
+                    ["EnterCategoryId"] = "Inserisci ID categoria"
                 },
 
                 ["es"] = new Dictionary<string, string>
@@ -574,7 +607,6 @@ namespace ConsoleUI
                     ["CategoryId"] = "CategoryId",
                     ["IsAvailable"] = "Disponible",
 
-                    // Table Headers
                     ["ColTitle"] = "Nombre del libro",
                     ["ColAuthor"] = "Nombre del autor",
                     ["ColISBN"] = "ISBN",
@@ -617,7 +649,13 @@ namespace ConsoleUI
                     ["PressEnterToContinue"] = "Presione Enter para continuar...",
                     ["Optional"] = "(opcional)",
                     ["NameRequired"] = "Se requiere el nombre.",
-                    ["CategoryExists"] = "Ya existe una categoría con este nombre."
+                    ["CategoryExists"] = "Ya existe una categoría con este nombre.",
+
+                    ["SelectExistingCategory"] = "Seleccionar categoría existente",
+                    ["CreateNewCategory"] = "Crear nueva categoría",
+                    ["NewCategoryName"] = "Nombre de nueva categoría",
+                    ["NewCategoryCreatedSelected"] = "Nueva categoría creada y seleccionada.",
+                    ["EnterCategoryId"] = "Ingrese ID de categoría"
                 }
             };
 
