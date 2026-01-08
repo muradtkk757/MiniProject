@@ -204,6 +204,7 @@ namespace ConsoleUI
             UI.SpinnerAnsi("🔎 " + UI.T("Loading"), 600, 30, 144, 255);
             var list = bookService.GetAll();
             var categories = categoryService.GetAll();
+            var members = memberService.GetAll(); 
 
             if (!list.Any())
             {
@@ -211,20 +212,32 @@ namespace ConsoleUI
             }
             else
             {
-                string format = "{0,-4} {1,-25} {2,-20} {3,-16} {4,-6} {5,-15} {6,-10}";
-                UI.WriteColoredLine(string.Format(format, "ID", UI.T("ColTitle"), UI.T("ColAuthor"), "ISBN", UI.T("ColYear"), UI.T("ColCat"), UI.T("ColStatus")), ConsoleColor.Yellow);
-                UI.WriteLine(new string('-', 105));
+               
+                string format = "{0,-4} {1,-22} {2,-18} {3,-13} {4,-6} {5,-12} {6,-3} {7,-15}";
+                UI.WriteColoredLine(string.Format(format, "ID", UI.T("ColTitle"), UI.T("ColAuthor"), "ISBN", UI.T("ColYear"), UI.T("ColCat"), "Sts", "Oxuyur"), ConsoleColor.Yellow);
+                UI.WriteLine(new string('-', 100));
 
                 int idx = 0;
                 foreach (var b in list)
                 {
-                    var catName = categories.FirstOrDefault(c => c.Id == b.CategoryId)?.Name ?? "Yoxdur";
-                    string title = b.Title.Length > 22 ? b.Title.Substring(0, 22) + ".." : b.Title;
-                    string author = b.Author.Length > 17 ? b.Author.Substring(0, 17) + ".." : b.Author;
-                    string cat = catName.Length > 12 ? catName.Substring(0, 12) + ".." : catName;
+                    var catName = categories.FirstOrDefault(c => c.Id == b.CategoryId)?.Name ?? "-";
+                    string title = b.Title.Length > 20 ? b.Title.Substring(0, 19) + ".." : b.Title;
+                    string author = b.Author.Length > 16 ? b.Author.Substring(0, 15) + ".." : b.Author;
+                    string cat = catName.Length > 10 ? catName.Substring(0, 9) + ".." : catName;
+
+                    
+                    string memberName = "";
+                    if (b.CurrentMemberId > 0)
+                    {
+                        var m = members.FirstOrDefault(x => x.Id == b.CurrentMemberId);
+                        if (m != null) memberName = m.FullName.Length > 14 ? m.FullName.Substring(0, 14) + "." : m.FullName;
+                    }
+
                     string status = b.IsAvailable ? "+" : "-";
                     var color = (idx % 2 == 0) ? ConsoleColor.Gray : ConsoleColor.DarkGray;
-                    UI.WriteColoredLine(string.Format(format, b.Id, title, author, b.ISBN, b.PublishedYear, cat, status), color);
+
+                    
+                    UI.WriteColoredLine(string.Format(format, b.Id, title, author, b.ISBN, b.PublishedYear, cat, status, memberName), color);
                     idx++;
                 }
                 UI.WaitForEnterAndClearFrom(areaStart, UI.T("PressEnterToContinue"));
@@ -575,6 +588,8 @@ namespace ConsoleUI
             int start = Console.CursorTop;
             UI.SpinnerAnsi("🔎 " + UI.T("Loading"), 500, 0, 200, 200);
             var list = memberService.GetAll();
+            var books = bookService.GetAll();
+
             if (!list.Any())
             {
                 UI.DisplayTransientMessage("ℹ️ " + UI.T("NoMembers"), 900, start);
@@ -582,15 +597,23 @@ namespace ConsoleUI
             }
             else
             {
-                string format = "{0,-5} {1,-25} {2,-30} {3,-15} {4,-10}";
-                UI.WriteColoredLine(string.Format(format, UI.T("ColMemId"), UI.T("ColMemName"), UI.T("ColMemEmail"), UI.T("ColMemPhone"), UI.T("ColMemStatus")), ConsoleColor.Cyan);
-                UI.WriteLine(new string('-', 90));
+                string format = "{0,-5} {1,-20} {2,-25} {3,-15} {4,-5} {5,-20}";
+                UI.WriteColoredLine(string.Format(format, "ID", UI.T("ColMemName"), UI.T("ColMemEmail"), UI.T("ColMemPhone"), "Sts", "Kitab"), ConsoleColor.Cyan);
+                UI.WriteLine(new string('-', 100));
 
                 int idx = 0;
                 foreach (var m in list)
                 {
+                   
+                    string bookTitle = "";
+                    if (m.CurrentBookId > 0)
+                    {
+                        var b = books.FirstOrDefault(x => x.Id == m.CurrentBookId);
+                        if (b != null) bookTitle = b.Title.Length > 18 ? b.Title.Substring(0, 18) + "." : b.Title;
+                    }
+
                     var color = (idx % 2 == 0) ? ConsoleColor.Gray : ConsoleColor.DarkGray;
-                    UI.WriteColoredLine(string.Format(format, m.Id, m.FullName, m.Email, m.PhoneNumber, m.IsActive ? "+" : "-"), color);
+                    UI.WriteColoredLine(string.Format(format, m.Id, m.FullName, m.Email, m.PhoneNumber, m.IsActive ? "+" : "-", bookTitle), color);
                     idx++;
                 }
                 UI.WaitForEnterAndClearFrom(areaStart, UI.T("PressEnterToContinue"));
@@ -617,50 +640,126 @@ namespace ConsoleUI
         static void UpdateMemberFlow(int areaStart)
         {
             int start = Console.CursorTop;
-            UI.Write("🔢 " + UI.T("Id") + ": "); var idS = Console.ReadLine();
-            if (!int.TryParse(idS, out int id)) { UI.DisplayTransientMessage("❌ " + UI.T("InvalidId"), 900, start); UI.ClearFromLine(areaStart); }
-            else
+            UI.Write("🔢 " + UI.T("Id") + ": ");
+            var idS = Console.ReadLine();
+
+            if (!int.TryParse(idS, out int id))
             {
-                var existing = memberService.Get(id);
-                if (existing == null) { UI.DisplayTransientMessage("ℹ️ " + UI.T("NotFound"), 900, start); UI.ClearFromLine(areaStart); }
+                UI.DisplayTransientMessage("❌ " + UI.T("InvalidId"), 900, start);
+                UI.ClearFromLine(areaStart);
+                return;
+            }
+
+            var existingMember = memberService.Get(id);
+            if (existingMember == null)
+            {
+                UI.DisplayTransientMessage("ℹ️ " + UI.T("NotFound"), 900, start);
+                UI.ClearFromLine(areaStart);
+                return;
+            }
+
+        
+            UI.Write($"🧾 {UI.T("FullName")} ({existingMember.FullName}): ");
+            var name = Console.ReadLine();
+            UI.Write($"📧 {UI.T("Email")} ({existingMember.Email}): ");
+            var email = Console.ReadLine();
+            UI.Write($"📱 {UI.T("PhoneNumber")} ({existingMember.PhoneNumber}): ");
+            var phone = Console.ReadLine();
+
+       
+            string currentBookTitle = "Heç nə";
+            if (existingMember.CurrentBookId > 0)
+            {
+                var b = bookService.Get(existingMember.CurrentBookId);
+                if (b != null) currentBookTitle = b.Title;
+            }
+            UI.WriteColoredLine($"📖 Hazırda oxuyur: {currentBookTitle}", ConsoleColor.Yellow);
+
+            
+            UI.Write("Kitabı dəyişmək/təyin etmək istəyirsiz? (1 = Bəli, Enter = Xeyr): ");
+            var changeBook = Console.ReadLine();
+
+            if (changeBook == "1")
+            {
+               
+                UI.WriteLine("--- Kitablar ---");
+                var availBooks = bookService.GetAll();
+                foreach (var b in availBooks)
+                {
+                    
+                    string status = b.IsAvailable ? "[BOŞ]" : (b.CurrentMemberId == existingMember.Id ? "[BUNDA]" : "[DOLU]");
+                    Console.ForegroundColor = b.IsAvailable ? ConsoleColor.Green : ConsoleColor.Red;
+                    Console.WriteLine($"{b.Id}: {b.Title} {status}");
+                    Console.ResetColor();
+                }
+
+                UI.Write("Yeni Kitab ID (Boş buraxsanız heç nə oxumur): ");
+                var newBookIdS = Console.ReadLine();
+
+                if (int.TryParse(newBookIdS, out int newBookId) && newBookId > 0)
+                {
+                    var newBook = bookService.Get(newBookId);
+                    if (newBook != null)
+                    {
+                     
+                        if (existingMember.CurrentBookId > 0)
+                        {
+                            var oldBook = bookService.Get(existingMember.CurrentBookId);
+                            if (oldBook != null)
+                            {
+                                oldBook.IsAvailable = true;
+                                oldBook.CurrentMemberId = 0;
+                                bookService.Update(oldBook);
+                            }
+                        }
+
+                    
+                        if (newBook.IsAvailable || newBook.CurrentMemberId == existingMember.Id)
+                        {
+                            newBook.IsAvailable = false;
+                            newBook.CurrentMemberId = existingMember.Id;
+                            bookService.Update(newBook);
+
+                            existingMember.CurrentBookId = newBook.Id;
+                            existingMember.IsActive = true; 
+                        }
+                        else
+                        {
+                            UI.WriteError("❌ Bu kitab başqasındadır!");
+                         
+                        }
+                    }
+                    else
+                    {
+                        UI.WriteError("❌ Belə kitab yoxdur.");
+                    }
+                }
                 else
                 {
-                    UI.Write($"🧾 {UI.T("FullName")} ({existing.FullName}): "); var name = Console.ReadLine();
-                    UI.Write($"📧 {UI.T("Email")} ({existing.Email}): "); var email = Console.ReadLine();
-                    UI.Write($"📱 {UI.T("PhoneNumber")} ({existing.PhoneNumber}): "); var phone = Console.ReadLine();
-                    UI.Write($"✅ {UI.T("IsActive")} ({existing.IsActive}): "); var activeS = Console.ReadLine();
-
-                    if (!string.IsNullOrWhiteSpace(name) && name != existing.FullName)
+                  
+                    if (existingMember.CurrentBookId > 0)
                     {
-                        if (memberService.GetAll().Any(x => x.FullName.ToLower() == name.ToLower()))
+                        var oldBook = bookService.Get(existingMember.CurrentBookId);
+                        if (oldBook != null)
                         {
-                            UI.DisplayTransientMessage("❌ Name exists already!", 1500, start);
-                            UI.ClearFromLine(areaStart);
-                            return;
+                            oldBook.IsAvailable = true;
+                            oldBook.CurrentMemberId = 0;
+                            bookService.Update(oldBook);
                         }
-                        existing.FullName = name;
                     }
-                    if (!string.IsNullOrWhiteSpace(email) && email != existing.Email)
-                    {
-                        if (memberService.GetAll().Any(x => x.Email.ToLower() == email.ToLower()))
-                        {
-                            UI.DisplayTransientMessage("❌ Email exists already!", 1500, start);
-                            UI.ClearFromLine(areaStart);
-                            return;
-                        }
-                        existing.Email = email;
-                    }
-
-                    existing.PhoneNumber = string.IsNullOrWhiteSpace(phone) ? existing.PhoneNumber : phone;
-                    if (!string.IsNullOrWhiteSpace(activeS) && (activeS == "1" || activeS.ToLower() == "true")) existing.IsActive = true;
-                    else if (!string.IsNullOrWhiteSpace(activeS) && (activeS == "0" || activeS.ToLower() == "false")) existing.IsActive = false;
-
-                    memberService.Update(existing);
-                    UI.DisplayTransientMessage("✅ Member updated successfully!", 1500, areaStart);
+                    existingMember.CurrentBookId = 0;
+                    existingMember.IsActive = false; 
                 }
             }
-        }
 
+            
+            if (!string.IsNullOrWhiteSpace(name)) existingMember.FullName = name;
+            if (!string.IsNullOrWhiteSpace(email)) existingMember.Email = email;
+            if (!string.IsNullOrWhiteSpace(phone)) existingMember.PhoneNumber = phone;
+
+            memberService.Update(existingMember);
+            UI.DisplayTransientMessage("✅ Member info updated!", 1500, areaStart);
+        }
         static void DeleteMemberFlow(int areaStart)
         {
             int start = Console.CursorTop;

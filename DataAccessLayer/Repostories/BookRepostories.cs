@@ -3,17 +3,16 @@ using DataAccessLayer.Repostories.Contracts;
 using DataAccessLayerModels;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccessLayer.Repostories
 {
-
     public class BookRepository : IRepository<Book>
     {
-        private readonly string _file = Data.Data.BooksFile;
+        private readonly string _file = DataAccessLayer.Data.Data.BooksFile;
 
+       
         private const int ID_LENGTH = 5;
         private const int TITLE_LENGTH = 30;
         private const int AUTHOR_LENGTH = 25;
@@ -21,16 +20,17 @@ namespace DataAccessLayer.Repostories
         private const int YEAR_LENGTH = 4;
         private const int CATEGORYID_LENGTH = 5;
         private const int ISAVAILABLE_LENGTH = 1;
+        private const int MEMBERID_LENGTH = 5; 
 
         public BookRepository()
         {
-            Data.Data.EnsureDataFiles();
+            DataAccessLayer.Data.Data.EnsureDataFiles();
         }
 
         public void Add(Book entity)
         {
-            var all = GetAll();
-            int nextId = (all.Any() ? all.Max(b => b.Id) : 0) + 1;
+            var allBooks = GetAll();
+            int nextId = (allBooks.Any() ? allBooks.Max(b => b.Id) : 0) + 1;
             entity.Id = nextId;
             string line = BuildLine(entity);
             File.AppendAllText(_file, line + Environment.NewLine);
@@ -45,75 +45,76 @@ namespace DataAccessLayer.Repostories
                 lines.RemoveAt(idx);
                 File.WriteAllLines(_file, lines);
             }
-            else
-            {
-                throw new Exception("Book not found.");
-            }
         }
 
         public List<Book> GetAll()
         {
             var result = new List<Book>();
+            if (!File.Exists(_file)) return result;
+
             foreach (var line in File.ReadAllLines(_file))
             {
                 if (string.IsNullOrWhiteSpace(line)) continue;
-                result.Add(ParseLine(line));
+                var b = ParseLine(line);
+                if (b != null) result.Add(b);
             }
             return result;
         }
 
         public Book GetById(int id)
         {
-            var line = File.ReadAllLines(_file).FirstOrDefault(l => !string.IsNullOrWhiteSpace(l) && ParseIdFromLine(l) == id);
-            if (line == null) return null;
-            return ParseLine(line);
-        }
-
-        public List<Book> Search(string keyword)
-        {
-            keyword = (keyword ?? string.Empty).ToLower();
-            return GetAll().Where(b =>
-                (!string.IsNullOrEmpty(b.Title) && b.Title.ToLower().Contains(keyword)) ||
-                (!string.IsNullOrEmpty(b.Author) && b.Author.ToLower().Contains(keyword)) ||
-                b.CategoryId.ToString() == keyword
-            ).ToList();
+            if (!File.Exists(_file)) return null;
+            var line = File.ReadAllLines(_file)
+                           .FirstOrDefault(l => !string.IsNullOrWhiteSpace(l) && ParseIdFromLine(l) == id);
+            return line == null ? null : ParseLine(line);
         }
 
         public void Update(Book entity)
         {
             var lines = File.ReadAllLines(_file).ToList();
             int idx = lines.FindIndex(l => ParseIdFromLine(l) == entity.Id);
+
             if (idx >= 0)
             {
                 lines[idx] = BuildLine(entity);
                 File.WriteAllLines(_file, lines);
             }
-            else
-            {
-                throw new Exception("Book not found.");
-            }
         }
 
+        public List<Book> Search(string keyword)
+        {
+          
+            return GetAll().Where(x => x.Title.Contains(keyword)).ToList();
+        }
+
+       
         private int ParseIdFromLine(string line)
         {
+            if (line.Length < ID_LENGTH) return 0;
             var idStr = line.Substring(0, ID_LENGTH);
-            if (int.TryParse(idStr, out int id)) return id;
-            return 0;
+            return int.TryParse(idStr, out int id) ? id : 0;
         }
 
         private Book ParseLine(string line)
         {
-         
             try
             {
                 int index = 0;
+                
                 string idS = line.Substring(index, ID_LENGTH); index += ID_LENGTH;
                 string title = line.Substring(index, TITLE_LENGTH); index += TITLE_LENGTH;
                 string author = line.Substring(index, AUTHOR_LENGTH); index += AUTHOR_LENGTH;
                 string isbn = line.Substring(index, ISBN_LENGTH); index += ISBN_LENGTH;
                 string yearS = line.Substring(index, YEAR_LENGTH); index += YEAR_LENGTH;
                 string catS = line.Substring(index, CATEGORYID_LENGTH); index += CATEGORYID_LENGTH;
-                string availS = line.Substring(index, ISAVAILABLE_LENGTH); 
+                string availS = line.Substring(index, ISAVAILABLE_LENGTH); index += ISAVAILABLE_LENGTH;
+
+              
+                string memIdS = "0";
+                if (line.Length >= index + MEMBERID_LENGTH)
+                {
+                    memIdS = line.Substring(index, MEMBERID_LENGTH);
+                }
 
                 return new Book
                 {
@@ -123,29 +124,31 @@ namespace DataAccessLayer.Repostories
                     ISBN = isbn.Trim(),
                     PublishedYear = int.TryParse(yearS, out var y) ? y : 0,
                     CategoryId = int.TryParse(catS, out var c) ? c : 0,
-                    IsAvailable = availS == "1"
+                    IsAvailable = availS == "1",
+                    CurrentMemberId = int.TryParse(memIdS, out var m) ? m : 0
                 };
             }
-            catch (Exception ex)
+            catch
             {
-                throw new Exception("Failed to parse book line. " + ex.Message);
+                return null;
             }
         }
 
         private string BuildLine(Book b)
         {
-        
             string id = b.Id.ToString().PadLeft(ID_LENGTH, '0');
-            string title = (b.Title ?? string.Empty).PadRight(TITLE_LENGTH).Substring(0, TITLE_LENGTH);
-            string author = (b.Author ?? string.Empty).PadRight(AUTHOR_LENGTH).Substring(0, AUTHOR_LENGTH);
-            string isbn = (b.ISBN ?? string.Empty).PadRight(ISBN_LENGTH).Substring(0, ISBN_LENGTH);
-            string year = b.PublishedYear.ToString().PadLeft(YEAR_LENGTH, '0').Substring(0, YEAR_LENGTH);
-            string cat = b.CategoryId.ToString().PadLeft(CATEGORYID_LENGTH, '0').Substring(0, CATEGORYID_LENGTH);
+            string title = (b.Title ?? "").PadRight(TITLE_LENGTH).Substring(0, TITLE_LENGTH); 
+            string author = (b.Author ?? "").PadRight(AUTHOR_LENGTH).Substring(0, AUTHOR_LENGTH);
+            string isbn = (b.ISBN ?? "").PadRight(ISBN_LENGTH).Substring(0, ISBN_LENGTH);
+            string year = b.PublishedYear.ToString().PadLeft(YEAR_LENGTH, '0');
+            if (year.Length > YEAR_LENGTH) year = year.Substring(0, YEAR_LENGTH);
+            string cat = b.CategoryId.ToString().PadLeft(CATEGORYID_LENGTH, '0');
             string avail = b.IsAvailable ? "1" : "0";
 
-            return string.Concat(id, title, author, isbn, year, cat, avail);
+          
+            string memId = b.CurrentMemberId.ToString().PadLeft(MEMBERID_LENGTH, '0');
+
+            return string.Concat(id, title, author, isbn, year, cat, avail, memId);
         }
     }
 }
-
-

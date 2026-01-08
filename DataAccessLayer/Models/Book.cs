@@ -11,6 +11,8 @@ namespace DataAccessLayerModels
         public int CategoryId { get; set; }
         public bool IsAvailable { get; set; }
 
+        public int CurrentMemberId { get; set; }
+
     }
 }
 

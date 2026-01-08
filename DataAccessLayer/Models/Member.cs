@@ -14,5 +14,7 @@ namespace DataAccessLayerModels
         public string PhoneNumber { get; set; }
         public DateTime MembershipDate { get; set; }
         public bool IsActive { get; set; }
+
+        public int CurrentBookId { get; set; }
     }
 }

@@ -32,31 +32,28 @@ namespace ConsoleUI
                     ["Search"] = "Axtar",
                     ["Back"] = "Geri",
                     ["Choice"] = "Seçim:",
-
                     ["Title"] = "Başlıq",
                     ["Author"] = "Müəllif",
                     ["ISBN"] = "ISBN (13 simvol)",
                     ["PublishedYear"] = "Nəşr ili",
                     ["CategoryId"] = "KateqoriyaId",
                     ["IsAvailable"] = "Mövcuddurmu",
-
                     ["ColTitle"] = "Kitabın adı",
                     ["ColAuthor"] = "Müəllifin adı",
                     ["ColISBN"] = "ISBN",
                     ["ColYear"] = "İl",
                     ["ColCat"] = "Kateqoriya",
                     ["ColStatus"] = "Vəziyyəti",
-
+                    ["ColCurrentMember"] = "Oxuyur",
                     ["ColCatId"] = "ID",
                     ["ColCatName"] = "Kateqoriya Adı",
                     ["ColCatDesc"] = "Təsvir",
-
                     ["ColMemId"] = "ID",
                     ["ColMemName"] = "Adı Soyadı",
                     ["ColMemEmail"] = "E-poçt",
                     ["ColMemPhone"] = "Telefon",
                     ["ColMemStatus"] = "Status",
-
+                    ["ColCurrentBook"] = "Oxuduğu Kitab",
                     ["BookCreated"] = "Kitab yaradıldı.",
                     ["NoBooks"] = "Kitab yoxdur.",
                     ["InvalidId"] = "Yanlış id.",
@@ -81,16 +78,26 @@ namespace ConsoleUI
                     ["Starting"] = "Proqram başlanır",
                     ["PressEnterToContinue"] = "Davam etmək üçün Enter basın...",
                     ["Optional"] = "(istəyə bağlı)",
-                    ["NameRequired"] = "Ad daxil edin.",
+                    ["NameRequired"] = "Ad və E-poçt daxil edilməlidir.",
+                    ["DuplicateMemberError"] = "Bu Ad və ya E-poçt ilə üzv artıq mövcuddur!",
                     ["CategoryExists"] = "Bu kateqoriya artıq mövcuddur.",
-
+                    ["Default"] = "Susmaya görə",
                     ["SelectExistingCategory"] = "Mövcud Kateqoriyanı Seç",
                     ["CreateNewCategory"] = "Yeni Kateqoriya Yarat",
                     ["NewCategoryName"] = "Yeni Kateqoriya Adı",
                     ["NewCategoryCreatedSelected"] = "Yeni kateqoriya yaradıldı və seçildi.",
-                    ["EnterCategoryId"] = "Kateqoriya ID daxil et"
+                    ["EnterCategoryId"] = "Kateqoriya ID daxil et",
+                    ["CurrentlyReading"] = "Hazırda oxuyur",
+                    ["ChangeBookPrompt"] = "Kitabı dəyişmək/təyin etmək istəyirsiz? (1 = Bəli, Enter = Xeyr)",
+                    ["BooksHeader"] = "--- Kitablar ---",
+                    ["StatusEmpty"] = "[BOŞ]",
+                    ["StatusCurrent"] = "[BUNDA]",
+                    ["StatusOccupied"] = "[DOLU]",
+                    ["EnterNewBookId"] = "Yeni Kitab ID (Boş buraxsanız heç nə oxumur)",
+                    ["BookOccupiedError"] = "Bu kitab başqasındadır!",
+                    ["BookNotFoundError"] = "Belə kitab yoxdur.",
+                    ["MemberUpdated"] = "Üzv məlumatları yeniləndi!"
                 },
-
                 ["en"] = new Dictionary<string, string>
                 {
                     ["LibraryTitle"] = "📚 Library Management System - Console UI",
@@ -113,31 +120,28 @@ namespace ConsoleUI
                     ["Search"] = "Search",
                     ["Back"] = "Back",
                     ["Choice"] = "Choice:",
-
                     ["Title"] = "Title",
                     ["Author"] = "Author",
                     ["ISBN"] = "ISBN (13 chars)",
                     ["PublishedYear"] = "Published Year",
                     ["CategoryId"] = "CategoryId",
                     ["IsAvailable"] = "IsAvailable",
-
                     ["ColTitle"] = "Book Name",
                     ["ColAuthor"] = "Author Name",
                     ["ColISBN"] = "ISBN",
                     ["ColYear"] = "Year",
                     ["ColCat"] = "Category",
                     ["ColStatus"] = "Status",
-
+                    ["ColCurrentMember"] = "Reader",
                     ["ColCatId"] = "ID",
                     ["ColCatName"] = "Category Name",
                     ["ColCatDesc"] = "Description",
-
                     ["ColMemId"] = "ID",
                     ["ColMemName"] = "Full Name",
                     ["ColMemEmail"] = "Email",
                     ["ColMemPhone"] = "Phone",
                     ["ColMemStatus"] = "Status",
-
+                    ["ColCurrentBook"] = "Current Book",
                     ["BookCreated"] = "Book created.",
                     ["NoBooks"] = "No books.",
                     ["InvalidId"] = "Invalid id.",
@@ -162,16 +166,26 @@ namespace ConsoleUI
                     ["Starting"] = "Starting app",
                     ["PressEnterToContinue"] = "Press Enter to continue...",
                     ["Optional"] = "(optional)",
-                    ["NameRequired"] = "Name is required.",
+                    ["NameRequired"] = "Name and Email are required.",
+                    ["DuplicateMemberError"] = "A member with this Name or Email already exists!",
                     ["CategoryExists"] = "A category with this name already exists.",
-
+                    ["Default"] = "Default",
                     ["SelectExistingCategory"] = "Select Existing Category",
                     ["CreateNewCategory"] = "Create New Category",
                     ["NewCategoryName"] = "New Category Name",
                     ["NewCategoryCreatedSelected"] = "New category created and selected.",
-                    ["EnterCategoryId"] = "Enter Category ID"
+                    ["EnterCategoryId"] = "Enter Category ID",
+                    ["CurrentlyReading"] = "Currently reading",
+                    ["ChangeBookPrompt"] = "Do you want to change/assign book? (1 = Yes, Enter = No)",
+                    ["BooksHeader"] = "--- Books ---",
+                    ["StatusEmpty"] = "[EMPTY]",
+                    ["StatusCurrent"] = "[CURRENT]",
+                    ["StatusOccupied"] = "[OCCUPIED]",
+                    ["EnterNewBookId"] = "New Book ID (Leave empty to clear)",
+                    ["BookOccupiedError"] = "This book is occupied by someone else!",
+                    ["BookNotFoundError"] = "Book not found.",
+                    ["MemberUpdated"] = "Member info updated!"
                 },
-
                 ["ru"] = new Dictionary<string, string>
                 {
                     ["LibraryTitle"] = "📚 Система управления библиотекой - Console UI",
@@ -194,31 +208,28 @@ namespace ConsoleUI
                     ["Search"] = "Поиск",
                     ["Back"] = "Назад",
                     ["Choice"] = "Выбор:",
-
                     ["Title"] = "Название",
                     ["Author"] = "Автор",
                     ["ISBN"] = "ISBN (13 символов)",
                     ["PublishedYear"] = "Год издания",
                     ["CategoryId"] = "CategoryId",
                     ["IsAvailable"] = "Доступна ли",
-
                     ["ColTitle"] = "Название книги",
                     ["ColAuthor"] = "Имя автора",
                     ["ColISBN"] = "ISBN",
                     ["ColYear"] = "Год",
                     ["ColCat"] = "Категория",
                     ["ColStatus"] = "Статус",
-
+                    ["ColCurrentMember"] = "Читатель",
                     ["ColCatId"] = "ID",
                     ["ColCatName"] = "Имя категории",
                     ["ColCatDesc"] = "Описание",
-
                     ["ColMemId"] = "ID",
                     ["ColMemName"] = "Полное имя",
                     ["ColMemEmail"] = "Эл.почта",
                     ["ColMemPhone"] = "Телефон",
                     ["ColMemStatus"] = "Статус",
-
+                    ["ColCurrentBook"] = "Текущая книга",
                     ["BookCreated"] = "Книга создана.",
                     ["NoBooks"] = "Книг нет.",
                     ["InvalidId"] = "Неверный id.",
@@ -243,16 +254,26 @@ namespace ConsoleUI
                     ["Starting"] = "Запуск программы",
                     ["PressEnterToContinue"] = "Нажмите Enter, чтобы продолжить...",
                     ["Optional"] = "(необязательно)",
-                    ["NameRequired"] = "Требуется имя.",
+                    ["NameRequired"] = "Имя и адрес электронной почты обязательны.",
+                    ["DuplicateMemberError"] = "Участник с таким именем или электронной почтой уже существует!",
                     ["CategoryExists"] = "Категория с таким именем уже существует.",
-
+                    ["Default"] = "По умолчанию",
                     ["SelectExistingCategory"] = "Выбрать существующую категорию",
                     ["CreateNewCategory"] = "Создать новую категорию",
                     ["NewCategoryName"] = "Имя новой категории",
                     ["NewCategoryCreatedSelected"] = "Новая категория создана и выбрана.",
-                    ["EnterCategoryId"] = "Введите ID категории"
+                    ["EnterCategoryId"] = "Введите ID категории",
+                    ["CurrentlyReading"] = "Сейчас читает",
+                    ["ChangeBookPrompt"] = "Хотите изменить/назначить книгу? (1 = Да, Enter = Нет)",
+                    ["BooksHeader"] = "--- Книги ---",
+                    ["StatusEmpty"] = "[ПУСТО]",
+                    ["StatusCurrent"] = "[У НЕГО]",
+                    ["StatusOccupied"] = "[ЗАНЯТО]",
+                    ["EnterNewBookId"] = "ID новой книги (оставьте пустым для очистки)",
+                    ["BookOccupiedError"] = "Эта книга занята другим!",
+                    ["BookNotFoundError"] = "Книга не найдена.",
+                    ["MemberUpdated"] = "Информация об участнике обновлена!"
                 },
-
                 ["zh"] = new Dictionary<string, string>
                 {
                     ["LibraryTitle"] = "📚 图书馆管理系统 - 控制台 UI",
@@ -275,31 +296,28 @@ namespace ConsoleUI
                     ["Search"] = "搜索",
                     ["Back"] = "返回",
                     ["Choice"] = "选择：",
-
                     ["Title"] = "标题",
                     ["Author"] = "作者",
                     ["ISBN"] = "ISBN（13位）",
                     ["PublishedYear"] = "出版年份",
                     ["CategoryId"] = "类别Id",
                     ["IsAvailable"] = "可用",
-
                     ["ColTitle"] = "书名",
                     ["ColAuthor"] = "作者姓名",
                     ["ColISBN"] = "ISBN",
                     ["ColYear"] = "年份",
                     ["ColCat"] = "类别",
                     ["ColStatus"] = "状态",
-
+                    ["ColCurrentMember"] = "读者",
                     ["ColCatId"] = "ID",
                     ["ColCatName"] = "类别名称",
                     ["ColCatDesc"] = "描述",
-
                     ["ColMemId"] = "ID",
                     ["ColMemName"] = "全名",
                     ["ColMemEmail"] = "电子邮件",
                     ["ColMemPhone"] = "电话",
                     ["ColMemStatus"] = "状态",
-
+                    ["ColCurrentBook"] = "当前书籍",
                     ["BookCreated"] = "图书已创建。",
                     ["NoBooks"] = "没有图书。",
                     ["InvalidId"] = "无效的ID。",
@@ -324,16 +342,26 @@ namespace ConsoleUI
                     ["Starting"] = "启动程序",
                     ["PressEnterToContinue"] = "按回车继续...",
                     ["Optional"] = "（可选）",
-                    ["NameRequired"] = "名称为必填项。",
+                    ["NameRequired"] = "姓名和电子邮件是必填项。",
+                    ["DuplicateMemberError"] = "具有此姓名或电子邮件的成员已存在！",
                     ["CategoryExists"] = "具有此名称的类别已存在。",
-
+                    ["Default"] = "默认",
                     ["SelectExistingCategory"] = "选择现有类别",
                     ["CreateNewCategory"] = "创建新类别",
                     ["NewCategoryName"] = "新类别名称",
                     ["NewCategoryCreatedSelected"] = "新类别已创建并选中。",
-                    ["EnterCategoryId"] = "输入类别ID"
+                    ["EnterCategoryId"] = "输入类别ID",
+                    ["CurrentlyReading"] = "当前阅读",
+                    ["ChangeBookPrompt"] = "您想更改/分配书籍吗？ (1 = 是, Enter = 否)",
+                    ["BooksHeader"] = "--- 图书 ---",
+                    ["StatusEmpty"] = "[空闲]",
+                    ["StatusCurrent"] = "[当前]",
+                    ["StatusOccupied"] = "[占用]",
+                    ["EnterNewBookId"] = "新书ID (留空则清除)",
+                    ["BookOccupiedError"] = "这本书被别人占用了！",
+                    ["BookNotFoundError"] = "未找到书籍。",
+                    ["MemberUpdated"] = "成员信息已更新！"
                 },
-
                 ["fr"] = new Dictionary<string, string>
                 {
                     ["LibraryTitle"] = "📚 Système de gestion de bibliothèque - Console UI",
@@ -356,31 +384,28 @@ namespace ConsoleUI
                     ["Search"] = "Rechercher",
                     ["Back"] = "Retour",
                     ["Choice"] = "Choix :",
-
                     ["Title"] = "Titre",
                     ["Author"] = "Auteur",
                     ["ISBN"] = "ISBN (13 caractères)",
                     ["PublishedYear"] = "Année de publication",
                     ["CategoryId"] = "CategoryId",
                     ["IsAvailable"] = "Disponible",
-
                     ["ColTitle"] = "Nom du livre",
                     ["ColAuthor"] = "Nom de l'auteur",
                     ["ColISBN"] = "ISBN",
                     ["ColYear"] = "Année",
                     ["ColCat"] = "Catégorie",
                     ["ColStatus"] = "État",
-
+                    ["ColCurrentMember"] = "Lecteur",
                     ["ColCatId"] = "ID",
                     ["ColCatName"] = "Nom de catégorie",
                     ["ColCatDesc"] = "Description",
-
                     ["ColMemId"] = "ID",
                     ["ColMemName"] = "Nom complet",
                     ["ColMemEmail"] = "E-mail",
                     ["ColMemPhone"] = "Téléphone",
                     ["ColMemStatus"] = "État",
-
+                    ["ColCurrentBook"] = "Livre actuel",
                     ["BookCreated"] = "Livre créé.",
                     ["NoBooks"] = "Aucun livre.",
                     ["InvalidId"] = "Id invalide.",
@@ -405,16 +430,26 @@ namespace ConsoleUI
                     ["Starting"] = "Démarrage de l'application",
                     ["PressEnterToContinue"] = "Appuyez sur Entrée pour continuer...",
                     ["Optional"] = "(facultatif)",
-                    ["NameRequired"] = "Le nom est requis.",
+                    ["NameRequired"] = "Le nom et l'e-mail sont obligatoires.",
+                    ["DuplicateMemberError"] = "Un membre avec ce nom ou cet e-mail existe déjà !",
                     ["CategoryExists"] = "Une catégorie avec ce nom existe déjà.",
-
+                    ["Default"] = "Défaut",
                     ["SelectExistingCategory"] = "Sélectionner une catégorie existante",
                     ["CreateNewCategory"] = "Créer une nouvelle catégorie",
                     ["NewCategoryName"] = "Nom de la nouvelle catégorie",
                     ["NewCategoryCreatedSelected"] = "Nouvelle catégorie créée et sélectionnée.",
-                    ["EnterCategoryId"] = "Entrez l'ID de catégorie"
+                    ["EnterCategoryId"] = "Entrez l'ID de catégorie",
+                    ["CurrentlyReading"] = "Lit actuellement",
+                    ["ChangeBookPrompt"] = "Voulez-vous changer/attribuer un livre ? (1 = Oui, Entrée = Non)",
+                    ["BooksHeader"] = "--- Livres ---",
+                    ["StatusEmpty"] = "[VIDE]",
+                    ["StatusCurrent"] = "[ACTUEL]",
+                    ["StatusOccupied"] = "[OCCUPÉ]",
+                    ["EnterNewBookId"] = "Nouvel ID de livre (Laisser vide pour effacer)",
+                    ["BookOccupiedError"] = "Ce livre est occupé par quelqu'un d'autre !",
+                    ["BookNotFoundError"] = "Livre introuvable.",
+                    ["MemberUpdated"] = "Informations du membre mises à jour !"
                 },
-
                 ["de"] = new Dictionary<string, string>
                 {
                     ["LibraryTitle"] = "📚 Bibliotheksverwaltung - Console UI",
@@ -437,31 +472,28 @@ namespace ConsoleUI
                     ["Search"] = "Suchen",
                     ["Back"] = "Zurück",
                     ["Choice"] = "Auswahl:",
-
                     ["Title"] = "Titel",
                     ["Author"] = "Autor",
                     ["ISBN"] = "ISBN (13 Zeichen)",
                     ["PublishedYear"] = "Erscheinungsjahr",
                     ["CategoryId"] = "CategoryId",
                     ["IsAvailable"] = "Verfügbar",
-
                     ["ColTitle"] = "Buchtitel",
                     ["ColAuthor"] = "Autorenname",
                     ["ColISBN"] = "ISBN",
                     ["ColYear"] = "Jahr",
                     ["ColCat"] = "Kategorie",
                     ["ColStatus"] = "Status",
-
+                    ["ColCurrentMember"] = "Leser",
                     ["ColCatId"] = "ID",
                     ["ColCatName"] = "Kategoriename",
                     ["ColCatDesc"] = "Beschreibung",
-
                     ["ColMemId"] = "ID",
                     ["ColMemName"] = "Vollständiger Name",
                     ["ColMemEmail"] = "E-Mail",
                     ["ColMemPhone"] = "Telefon",
                     ["ColMemStatus"] = "Status",
-
+                    ["ColCurrentBook"] = "Aktuelles Buch",
                     ["BookCreated"] = "Buch erstellt.",
                     ["NoBooks"] = "Keine Bücher.",
                     ["InvalidId"] = "Ungültige Id.",
@@ -486,16 +518,26 @@ namespace ConsoleUI
                     ["Starting"] = "Programm startet",
                     ["PressEnterToContinue"] = "Drücken Sie die Eingabetaste, um fortzufahren...",
                     ["Optional"] = "(optional)",
-                    ["NameRequired"] = "Name ist erforderlich.",
+                    ["NameRequired"] = "Name und E-Mail sind erforderlich.",
+                    ["DuplicateMemberError"] = "Ein Mitglied mit diesem Namen oder dieser E-Mail existiert bereits!",
                     ["CategoryExists"] = "Eine Kategorie mit diesem Namen existiert bereits.",
-
+                    ["Default"] = "Standard",
                     ["SelectExistingCategory"] = "Vorhandene Kategorie auswählen",
                     ["CreateNewCategory"] = "Neue Kategorie erstellen",
                     ["NewCategoryName"] = "Neuer Kategoriename",
                     ["NewCategoryCreatedSelected"] = "Neue Kategorie erstellt und ausgewählt.",
-                    ["EnterCategoryId"] = "Kategorie-ID eingeben"
+                    ["EnterCategoryId"] = "Kategorie-ID eingeben",
+                    ["CurrentlyReading"] = "Liest gerade",
+                    ["ChangeBookPrompt"] = "Buch ändern/zuweisen? (1 = Ja, Enter = Nein)",
+                    ["BooksHeader"] = "--- Bücher ---",
+                    ["StatusEmpty"] = "[LEER]",
+                    ["StatusCurrent"] = "[AKTUELL]",
+                    ["StatusOccupied"] = "[BESETZT]",
+                    ["EnterNewBookId"] = "Neue Buch-ID (Leer lassen zum Löschen)",
+                    ["BookOccupiedError"] = "Dieses Buch ist von jemand anderem besetzt!",
+                    ["BookNotFoundError"] = "Buch nicht gefunden.",
+                    ["MemberUpdated"] = "Mitgliederinfo aktualisiert!"
                 },
-
                 ["it"] = new Dictionary<string, string>
                 {
                     ["LibraryTitle"] = "📚 Sistema di gestione della biblioteca - Console UI",
@@ -518,31 +560,28 @@ namespace ConsoleUI
                     ["Search"] = "Cerca",
                     ["Back"] = "Indietro",
                     ["Choice"] = "Scelta:",
-
                     ["Title"] = "Titolo",
                     ["Author"] = "Autore",
                     ["ISBN"] = "ISBN (13 caratteri)",
                     ["PublishedYear"] = "Anno di pubblicazione",
                     ["CategoryId"] = "CategoryId",
                     ["IsAvailable"] = "Disponibile",
-
                     ["ColTitle"] = "Nome del libro",
                     ["ColAuthor"] = "Nome dell'autore",
                     ["ColISBN"] = "ISBN",
                     ["ColYear"] = "Anno",
                     ["ColCat"] = "Categoria",
                     ["ColStatus"] = "Stato",
-
+                    ["ColCurrentMember"] = "Lettore",
                     ["ColCatId"] = "ID",
                     ["ColCatName"] = "Nome categoria",
                     ["ColCatDesc"] = "Descrizione",
-
                     ["ColMemId"] = "ID",
                     ["ColMemName"] = "Nome completo",
                     ["ColMemEmail"] = "Email",
                     ["ColMemPhone"] = "Telefono",
                     ["ColMemStatus"] = "Stato",
-
+                    ["ColCurrentBook"] = "Libro attuale",
                     ["BookCreated"] = "Libro creato.",
                     ["NoBooks"] = "Nessun libro.",
                     ["InvalidId"] = "Id non valido.",
@@ -567,16 +606,26 @@ namespace ConsoleUI
                     ["Starting"] = "Avvio dell'app",
                     ["PressEnterToContinue"] = "Premi Invio per continuare...",
                     ["Optional"] = "(facoltativo)",
-                    ["NameRequired"] = "Il nome è obbligatorio.",
+                    ["NameRequired"] = "Il nome e l'e-mail sono obbligatori.",
+                    ["DuplicateMemberError"] = "Un membro con questo nome o e-mail esiste già!",
                     ["CategoryExists"] = "Esiste già una categoria con questo nome.",
-
+                    ["Default"] = "Predefinito",
                     ["SelectExistingCategory"] = "Seleziona categoria esistente",
                     ["CreateNewCategory"] = "Crea nuova categoria",
                     ["NewCategoryName"] = "Nome nuova categoria",
                     ["NewCategoryCreatedSelected"] = "Nuova categoria creata e selezionata.",
-                    ["EnterCategoryId"] = "Inserisci ID categoria"
+                    ["EnterCategoryId"] = "Inserisci ID categoria",
+                    ["CurrentlyReading"] = "Legge attualmente",
+                    ["ChangeBookPrompt"] = "Vuoi cambiare/assegnare il libro? (1 = Sì, Invio = No)",
+                    ["BooksHeader"] = "--- Libri ---",
+                    ["StatusEmpty"] = "[VUOTO]",
+                    ["StatusCurrent"] = "[ATTUALE]",
+                    ["StatusOccupied"] = "[OCCUPATO]",
+                    ["EnterNewBookId"] = "Nuovo ID Libro (Lascia vuoto per cancellare)",
+                    ["BookOccupiedError"] = "Questo libro è occupato da qualcun altro!",
+                    ["BookNotFoundError"] = "Libro non trovato.",
+                    ["MemberUpdated"] = "Info membro aggiornate!"
                 },
-
                 ["es"] = new Dictionary<string, string>
                 {
                     ["LibraryTitle"] = "📚 Sistema de gestión de biblioteca - Console UI",
@@ -599,31 +648,28 @@ namespace ConsoleUI
                     ["Search"] = "Buscar",
                     ["Back"] = "Atrás",
                     ["Choice"] = "Elección:",
-
                     ["Title"] = "Título",
                     ["Author"] = "Autor",
                     ["ISBN"] = "ISBN (13 caracteres)",
                     ["PublishedYear"] = "Año de publicación",
                     ["CategoryId"] = "CategoryId",
                     ["IsAvailable"] = "Disponible",
-
                     ["ColTitle"] = "Nombre del libro",
                     ["ColAuthor"] = "Nombre del autor",
                     ["ColISBN"] = "ISBN",
                     ["ColYear"] = "Año",
                     ["ColCat"] = "Categoría",
                     ["ColStatus"] = "Estado",
-
+                    ["ColCurrentMember"] = "Lector",
                     ["ColCatId"] = "ID",
                     ["ColCatName"] = "Nombre de la categoría",
                     ["ColCatDesc"] = "Descripción",
-
                     ["ColMemId"] = "ID",
                     ["ColMemName"] = "Nombre completo",
                     ["ColMemEmail"] = "Correo",
                     ["ColMemPhone"] = "Teléfono",
                     ["ColMemStatus"] = "Estado",
-
+                    ["ColCurrentBook"] = "Libro actual",
                     ["BookCreated"] = "Libro creado.",
                     ["NoBooks"] = "No hay libros.",
                     ["InvalidId"] = "Id inválido.",
@@ -648,14 +694,25 @@ namespace ConsoleUI
                     ["Starting"] = "Iniciando la aplicación",
                     ["PressEnterToContinue"] = "Presione Enter para continuar...",
                     ["Optional"] = "(opcional)",
-                    ["NameRequired"] = "Se requiere el nombre.",
+                    ["NameRequired"] = "El nombre y el correo electrónico son obligatorios.",
+                    ["DuplicateMemberError"] = "¡Ya existe un miembro con este nombre o correo electrónico!",
                     ["CategoryExists"] = "Ya existe una categoría con este nombre.",
-
+                    ["Default"] = "Por defecto",
                     ["SelectExistingCategory"] = "Seleccionar categoría existente",
                     ["CreateNewCategory"] = "Crear nueva categoría",
                     ["NewCategoryName"] = "Nombre de nueva categoría",
                     ["NewCategoryCreatedSelected"] = "Nueva categoría creada y seleccionada.",
-                    ["EnterCategoryId"] = "Ingrese ID de categoría"
+                    ["EnterCategoryId"] = "Ingrese ID de categoría",
+                    ["CurrentlyReading"] = "Leyendo actualmente",
+                    ["ChangeBookPrompt"] = "¿Desea cambiar/asignar libro? (1 = Sí, Enter = No)",
+                    ["BooksHeader"] = "--- Libros ---",
+                    ["StatusEmpty"] = "[VACÍO]",
+                    ["StatusCurrent"] = "[ACTUAL]",
+                    ["StatusOccupied"] = "[OCUPADO]",
+                    ["EnterNewBookId"] = "Nuevo ID de Libro (Dejar vacío para borrar)",
+                    ["BookOccupiedError"] = "¡Este libro está ocupado por otra persona!",
+                    ["BookNotFoundError"] = "Libro no encontrado.",
+                    ["MemberUpdated"] = "¡Información del miembro actualizada!"
                 }
             };
 
