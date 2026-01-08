@@ -204,7 +204,7 @@ namespace ConsoleUI
             UI.SpinnerAnsi("🔎 " + UI.T("Loading"), 600, 30, 144, 255);
             var list = bookService.GetAll();
             var categories = categoryService.GetAll();
-            var members = memberService.GetAll(); 
+            var members = memberService.GetAll();
 
             if (!list.Any())
             {
@@ -212,9 +212,9 @@ namespace ConsoleUI
             }
             else
             {
-               
                 string format = "{0,-4} {1,-22} {2,-18} {3,-13} {4,-6} {5,-12} {6,-3} {7,-15}";
-                UI.WriteColoredLine(string.Format(format, "ID", UI.T("ColTitle"), UI.T("ColAuthor"), "ISBN", UI.T("ColYear"), UI.T("ColCat"), "Sts", "Oxuyur"), ConsoleColor.Yellow);
+                // BURADA DÜZƏLİŞ EDİLDİ: UI.T("ColCurrentMember")
+                UI.WriteColoredLine(string.Format(format, "ID", UI.T("ColTitle"), UI.T("ColAuthor"), "ISBN", UI.T("ColYear"), UI.T("ColCat"), "Sts", UI.T("ColCurrentMember")), ConsoleColor.Yellow);
                 UI.WriteLine(new string('-', 100));
 
                 int idx = 0;
@@ -225,7 +225,6 @@ namespace ConsoleUI
                     string author = b.Author.Length > 16 ? b.Author.Substring(0, 15) + ".." : b.Author;
                     string cat = catName.Length > 10 ? catName.Substring(0, 9) + ".." : catName;
 
-                    
                     string memberName = "";
                     if (b.CurrentMemberId > 0)
                     {
@@ -236,7 +235,6 @@ namespace ConsoleUI
                     string status = b.IsAvailable ? "+" : "-";
                     var color = (idx % 2 == 0) ? ConsoleColor.Gray : ConsoleColor.DarkGray;
 
-                    
                     UI.WriteColoredLine(string.Format(format, b.Id, title, author, b.ISBN, b.PublishedYear, cat, status, memberName), color);
                     idx++;
                 }
@@ -555,7 +553,7 @@ namespace ConsoleUI
 
                 if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(email))
                 {
-                    UI.DisplayTransientMessage("❌ Name and Email are required.", 1400, start);
+                    UI.DisplayTransientMessage("❌ " + UI.T("NameRequired"), 1400, start);
                     UI.ClearFromLine(areaStart);
                     return;
                 }
@@ -567,14 +565,14 @@ namespace ConsoleUI
 
                 if (duplicateExists)
                 {
-                    UI.DisplayTransientMessage("❌ A member with this Name or Email already exists!", 2000, start);
+                    UI.DisplayTransientMessage("❌ " + UI.T("DuplicateMemberError"), 2000, start);
                     UI.ClearFromLine(areaStart);
                     return;
                 }
 
                 var mem = new Member { FullName = name, Email = email, PhoneNumber = phone, MembershipDate = DateTime.Now, IsActive = true };
                 memberService.Create(mem);
-                UI.DisplayTransientMessage("✅ Member added successfully!", 1500, areaStart);
+                UI.DisplayTransientMessage("✅ " + UI.T("MemberCreated"), 1500, areaStart);
             }
             catch (Exception ex)
             {
@@ -598,13 +596,14 @@ namespace ConsoleUI
             else
             {
                 string format = "{0,-5} {1,-20} {2,-25} {3,-15} {4,-5} {5,-20}";
-                UI.WriteColoredLine(string.Format(format, "ID", UI.T("ColMemName"), UI.T("ColMemEmail"), UI.T("ColMemPhone"), "Sts", "Kitab"), ConsoleColor.Cyan);
+                // BURADA DÜZƏLİŞ EDİLDİ: UI.T("ColCurrentBook")
+                UI.WriteColoredLine(string.Format(format, "ID", UI.T("ColMemName"), UI.T("ColMemEmail"), UI.T("ColMemPhone"), "Sts", UI.T("ColCurrentBook")), ConsoleColor.Cyan);
                 UI.WriteLine(new string('-', 100));
 
                 int idx = 0;
                 foreach (var m in list)
                 {
-                   
+
                     string bookTitle = "";
                     if (m.CurrentBookId > 0)
                     {
@@ -658,7 +657,6 @@ namespace ConsoleUI
                 return;
             }
 
-        
             UI.Write($"🧾 {UI.T("FullName")} ({existingMember.FullName}): ");
             var name = Console.ReadLine();
             UI.Write($"📧 {UI.T("Email")} ({existingMember.Email}): ");
@@ -666,34 +664,30 @@ namespace ConsoleUI
             UI.Write($"📱 {UI.T("PhoneNumber")} ({existingMember.PhoneNumber}): ");
             var phone = Console.ReadLine();
 
-       
-            string currentBookTitle = "Heç nə";
+            string currentBookTitle = UI.T("NoResults");
             if (existingMember.CurrentBookId > 0)
             {
                 var b = bookService.Get(existingMember.CurrentBookId);
                 if (b != null) currentBookTitle = b.Title;
             }
-            UI.WriteColoredLine($"📖 Hazırda oxuyur: {currentBookTitle}", ConsoleColor.Yellow);
+            UI.WriteColoredLine($"📖 {UI.T("CurrentlyReading")}: {currentBookTitle}", ConsoleColor.Yellow);
 
-            
-            UI.Write("Kitabı dəyişmək/təyin etmək istəyirsiz? (1 = Bəli, Enter = Xeyr): ");
+            UI.Write(UI.T("ChangeBookPrompt") + " ");
             var changeBook = Console.ReadLine();
 
             if (changeBook == "1")
             {
-               
-                UI.WriteLine("--- Kitablar ---");
+                UI.WriteLine(UI.T("BooksHeader"));
                 var availBooks = bookService.GetAll();
                 foreach (var b in availBooks)
                 {
-                    
-                    string status = b.IsAvailable ? "[BOŞ]" : (b.CurrentMemberId == existingMember.Id ? "[BUNDA]" : "[DOLU]");
+                    string statusKey = b.IsAvailable ? "StatusEmpty" : (b.CurrentMemberId == existingMember.Id ? "StatusCurrent" : "StatusOccupied");
                     Console.ForegroundColor = b.IsAvailable ? ConsoleColor.Green : ConsoleColor.Red;
-                    Console.WriteLine($"{b.Id}: {b.Title} {status}");
+                    Console.WriteLine($"{b.Id}: {b.Title} {UI.T(statusKey)}");
                     Console.ResetColor();
                 }
 
-                UI.Write("Yeni Kitab ID (Boş buraxsanız heç nə oxumur): ");
+                UI.Write(UI.T("EnterNewBookId") + ": ");
                 var newBookIdS = Console.ReadLine();
 
                 if (int.TryParse(newBookIdS, out int newBookId) && newBookId > 0)
@@ -701,7 +695,6 @@ namespace ConsoleUI
                     var newBook = bookService.Get(newBookId);
                     if (newBook != null)
                     {
-                     
                         if (existingMember.CurrentBookId > 0)
                         {
                             var oldBook = bookService.Get(existingMember.CurrentBookId);
@@ -713,7 +706,6 @@ namespace ConsoleUI
                             }
                         }
 
-                    
                         if (newBook.IsAvailable || newBook.CurrentMemberId == existingMember.Id)
                         {
                             newBook.IsAvailable = false;
@@ -721,22 +713,20 @@ namespace ConsoleUI
                             bookService.Update(newBook);
 
                             existingMember.CurrentBookId = newBook.Id;
-                            existingMember.IsActive = true; 
+                            existingMember.IsActive = true;
                         }
                         else
                         {
-                            UI.WriteError("❌ Bu kitab başqasındadır!");
-                         
+                            UI.WriteError("❌ " + UI.T("BookOccupiedError"));
                         }
                     }
                     else
                     {
-                        UI.WriteError("❌ Belə kitab yoxdur.");
+                        UI.WriteError("❌ " + UI.T("BookNotFoundError"));
                     }
                 }
                 else
                 {
-                  
                     if (existingMember.CurrentBookId > 0)
                     {
                         var oldBook = bookService.Get(existingMember.CurrentBookId);
@@ -748,24 +738,23 @@ namespace ConsoleUI
                         }
                     }
                     existingMember.CurrentBookId = 0;
-                    existingMember.IsActive = false; 
+                    existingMember.IsActive = false;
                 }
             }
 
-            
             if (!string.IsNullOrWhiteSpace(name)) existingMember.FullName = name;
             if (!string.IsNullOrWhiteSpace(email)) existingMember.Email = email;
             if (!string.IsNullOrWhiteSpace(phone)) existingMember.PhoneNumber = phone;
 
             memberService.Update(existingMember);
-            UI.DisplayTransientMessage("✅ Member info updated!", 1500, areaStart);
+            UI.DisplayTransientMessage("✅ " + UI.T("MemberUpdated"), 1500, areaStart);
         }
         static void DeleteMemberFlow(int areaStart)
         {
             int start = Console.CursorTop;
             UI.Write("🔢 " + UI.T("Id") + ": "); var idS = Console.ReadLine();
             if (!int.TryParse(idS, out int id)) { UI.DisplayTransientMessage("❌ " + UI.T("InvalidId"), 900, start); UI.ClearFromLine(areaStart); }
-            else { memberService.Delete(id); UI.DisplayTransientMessage("🗑️ Member deleted successfully!", 1500, areaStart); }
+            else { memberService.Delete(id); UI.DisplayTransientMessage("🗑️ " + UI.T("Deleted"), 1500, areaStart); }
         }
 
         static void SearchMembersFlow(int areaStart)
@@ -782,7 +771,7 @@ namespace ConsoleUI
             {
                 string format = "{0,-5} {1,-25} {2,-30} {3,-15} {4,-10}";
                 UI.WriteColoredLine(string.Format(format, UI.T("ColMemId"), UI.T("ColMemName"), UI.T("ColMemEmail"), UI.T("ColMemPhone"), UI.T("ColMemStatus")), ConsoleColor.Cyan);
-                UI.WriteLine(new string('-', 90));
+                UI.WriteLine(new string('-', 100));
                 foreach (var m in res)
                 {
                     UI.WriteColoredLine(string.Format(format, m.Id, m.FullName, m.Email, m.PhoneNumber, m.IsActive ? "+" : "-"), ConsoleColor.DarkCyan);
